@@ -44,15 +44,15 @@ static inline void initTimer1(void){
 
 ISR(INT0_vect){
 	if (ECHO_PORT & (1<<ECHO_PIN)) {
-		TCINT = 0;
+		TCNT1 = 0;
 	}
 	else{
-		elapsedCounts = TCINT;
+		elapsedCounts = TCNT1;
 		distance = elapsedCounts / 58;
 	}
 }
 
-ISR(TIM2_OVF_vect){
+ISR(TIMER2_OVF_vect){
 	// Generate a 12us pulse to trigger the HR-SR04
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 	_delay_us(15);
