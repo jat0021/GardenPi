@@ -84,10 +84,10 @@ int main(){
 	sei();
 
 	while(1){
+		_delay_ms(1000);
 		TCNT1 = 0;
 		generatePulse();
 		goodReturn = 0;
-		_delay_ms(1000);
 	}
 
 	return(0);
