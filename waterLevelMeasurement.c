@@ -12,13 +12,13 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #define TRIGGER_PORT 	PORTD
 #define TRIGGER_DDR		DDRD
 
-#define ECHO_PIN		PD2
-#define ECHO_PORT		PORTD
-#define ECHO_DDR		DDRD
+#define ECHO_PIN		PB0
+#define ECHO_PORT		PORTB
+#define ECHO_DDR		DDRB
 
-#define LED_PIN			PB0
-#define LED_PORT		PORTB
-#define LED_DDR			DDRB
+#define LED_PIN			PC0
+#define LED_PORT		PORTC
+#define LED_DDR			DDRC
 
 #define DIST_THRESH 	5
 
@@ -27,24 +27,26 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #include <avr/interrupt.h>
 #include "USART.h"
 
-volatile uint16_t elapsedCounts;
-volatile uint32_t distance=10;
+volatile uint16_t beginCount, endCount;
+volatile uint32_t elapsedCounts;
+volatile uint32_t distance;
 
 static inline void initTimer1(void){
-	TCCR1B |= (1<<CS11);
-	TIMSK1 |= (1<<TOIE1);
+	TCCR1B |= (1<<CS11) | (1<<ICES1);
+	TIMSK1 |= (1<<TOIE1) | (1<<ICIE1);
 }
-/*
-ISR(INT0_vect){
-	if (PIND & (1<<ECHO_PIN)) {
-		TCNT1 = 0;
+
+ISR(TIMER1_CAPT_vect){
+	if(TCCR1B & (1<<ICES1)){
+		beginCount = ICR1;
+		TCCR1B &= ~(1<<ICES1);
 	}
 	else{
-		elapsedCounts = TCNT1;
-		distance = elapsedCounts / 58;
+		endCount = ICR1;
+		distance = (beginCount - endCount) / 58;
+		TCCR1B |= (1<<ICES1);
 	}
 }
-*/
 
 ISR(TIMER1_OVF_vect){
 	// Generate a 12us pulse to trigger the HR-SR04
@@ -53,11 +55,7 @@ ISR(TIMER1_OVF_vect){
 	TRIGGER_PORT |= (1<<TRIGGER_PIN);
 	_delay_us(15);
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
-
-	//TCNT1 = 0;
 }
-
-
 
 int main(){
 	LED_DDR |= (1<<LED_PIN);			//Set data direction out for LED pin
@@ -67,14 +65,12 @@ int main(){
 	sei();
 
 	while(1){
-		/*
 		if (distance < DIST_THRESH){
 			LED_PORT |= (1<<LED_PIN);
 		}
 		else {
 			LED_PORT &= ~(1<<LED_PIN);
 		}
-		*/
 	}
 
 	return(0);
