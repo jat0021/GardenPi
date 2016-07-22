@@ -31,7 +31,7 @@ volatile uint16_t elapsedCounts;
 volatile uint32_t distance=10;
 
 static inline void initTimer1(void){
-	TCCR1B |= (1<<CS11);
+	TCCR1B |= (1<<CS11) | (1<<CS10);
 	TIMSK1 |= (1<<TOIE1);
 }
 /*
@@ -47,6 +47,8 @@ ISR(INT0_vect){
 */
 
 ISR(TIMER1_OVF_vect){
+	LED_PORT ^= (1<<LED_PIN);
+	/*
 	// Generate a 12us pulse to trigger the HR-SR04
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 	_delay_ms(15);
@@ -55,6 +57,7 @@ ISR(TIMER1_OVF_vect){
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 
 	//TCNT1 = 0;
+	*/
 }
 
 
@@ -76,6 +79,6 @@ int main(){
 		}
 		*/
 	}
-	
+
 	return(0);
 }
