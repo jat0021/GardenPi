@@ -66,7 +66,7 @@ ISR(TIMER1_CAPT_vect){
 }
 
 ISR(TIMER1_COMPA_vect){
-	distance = 0xFFFFFFFF;
+	distance = 0x11111111;
 	sendDistance();
 }
 
