@@ -34,8 +34,7 @@ volatile char goodReturn=0;
 
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
-	TIMSK1 |= (1<<ICIE1) | (1<<OCIE1A) | (1<<ICNC1);
-	OCR1A = 50000;
+	TIMSK1 |= (1<<ICIE1) | (1<<TOIE1) | (1<<ICNC1);
 }
 
 static void sendDistance(void){
@@ -67,7 +66,7 @@ ISR(TIMER1_CAPT_vect){
 	}
 }
 
-ISR(TIMER1_COMPA_vect){
+ISR(TIMER1_OVF_vect){
 	if(~goodReturn){
 		distance = 0xFFFFFFFF;
 		sendDistance();
