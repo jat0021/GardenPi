@@ -69,7 +69,7 @@ ISR(TIMER1_CAPT_vect){
 
 ISR(TIMER1_COMPA_vect){
 	if(~goodReturn){
-		distance = 11111111;
+		distance = 0xFFFFFFFF;
 		sendDistance();
 		TCNT1 = 0;
 		TCCR1B |= (1<<ICES1);
