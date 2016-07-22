@@ -30,6 +30,7 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 volatile uint16_t beginCount, endCount;
 volatile uint32_t elapsedCounts;
 volatile uint32_t distance;
+volatile char badReturn=0;
 
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
@@ -53,21 +54,25 @@ static inline void generatePulse(void){
 }
 
 ISR(TIMER1_CAPT_vect){
-	if(TCCR1B & (1<<ICES1)){
-		beginCount = ICR1;
-		TCCR1B &= ~(1<<ICES1);
-	}
-	else{
-		endCount = ICR1;
-		distance = (endCount - beginCount) / 58;
-		sendDistance();
-		TCCR1B |= (1<<ICES1);
+	if(~badReturn){
+		if(TCCR1B & (1<<ICES1)){
+			beginCount = ICR1;
+			TCCR1B &= ~(1<<ICES1);
+		}
+		else{
+			endCount = ICR1;
+			distance = (endCount - beginCount) / 58;
+			sendDistance();
+			TCCR1B |= (1<<ICES1);
+		}
 	}
 }
 
 ISR(TIMER1_COMPA_vect){
+	badReturn = 1;
 	distance = 0x11111111;
 	sendDistance();
+	TCNT1 = 0;
 }
 
 int main(){
@@ -80,6 +85,7 @@ int main(){
 
 	while(1){
 		TCNT1 = 0;
+		badReturn = 0;
 		generatePulse();
 		_delay_ms(1000);
 	}
