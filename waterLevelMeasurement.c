@@ -46,12 +46,6 @@ ISR(INT0_vect){
 }
 
 ISR(TIMER1_OVF_vect){
-	LED_PORT |= (1<<LED_PIN);
-	_delay_ms(100);
-	LED_PORT &= ~(1<<LED_PIN);
-
-
-
 	// Generate a 12us pulse to trigger the HR-SR04
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 	_delay_us(15);
