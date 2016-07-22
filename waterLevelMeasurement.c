@@ -40,7 +40,7 @@ static inline void initTimer1(void){
 static void sendDistance(void){
 	printWord(distance>>16);
 	printWord(distance);
-	transitByte(0x0D);
+	transmitByte(0x0D);
 }
 
 static inline void generatePulse(void){
