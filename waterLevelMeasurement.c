@@ -30,7 +30,7 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #include "USART.h"
 
 volatile uint16_t elapsedCounts;
-volatile uint32_t distance;
+volatile uint32_t distance=10;
 
 static inline void initTimer2(void){
 	TCCR2B |= (1<<CS22) | (1<<CS21) | (1<<CS20);
