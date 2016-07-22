@@ -56,6 +56,7 @@ ISR(TIMER1_CAPT_vect){
 	if(TCCR1B & (1<<ICES1)){
 		beginCount = ICR1;
 		TCCR1B &= ~(1<<ICES1);
+		goodReturn = 0;
 	}
 	else{
 		endCount = ICR1;
@@ -87,7 +88,6 @@ int main(){
 		_delay_ms(1000);
 		TCNT1 = 0;
 		generatePulse();
-		goodReturn = 0;
 	}
 
 	return(0);
