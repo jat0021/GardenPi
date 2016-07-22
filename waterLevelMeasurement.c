@@ -52,7 +52,7 @@ ISR(TIMER1_CAPT_vect){
 	}
 	else{
 		endCount = ICR1;
-		distance = (beginCount - endCount) / 58;
+		distance = (endCount - beginCount) / 58;
 		TCCR1B |= (1<<ICES1);
 	}
 }
@@ -70,7 +70,8 @@ int main(){
 		generatePulse();
 		printWord(distance>>16);
 		printWord(distance);
-		_delay_ms(500);
+		transitByte(0x0D);
+		_delay_ms(1000);
 
 	}
 
