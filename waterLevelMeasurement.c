@@ -33,7 +33,14 @@ volatile uint32_t distance;
 
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
-	TIMSK1 |= (1<<ICIE1);
+	TIMSK1 |= (1<<ICIE1) | (1<<OCIE1A);
+	OCR1A = 40000;
+}
+
+static void sendDistance(void){
+	printWord(distance>>16);
+	printWord(distance);
+	transitByte(0x0D);
 }
 
 static inline void generatePulse(void){
@@ -53,8 +60,14 @@ ISR(TIMER1_CAPT_vect){
 	else{
 		endCount = ICR1;
 		distance = (endCount - beginCount) / 58;
+		sendDistance();
 		TCCR1B |= (1<<ICES1);
 	}
+}
+
+ISR(TIMER1_COMPA_vect){
+	distance = 0xFFFFFFFF;
+	sendDistance();
 }
 
 int main(){
@@ -68,11 +81,7 @@ int main(){
 	while(1){
 		TCNT1 = 0;
 		generatePulse();
-		printWord(distance>>16);
-		printWord(distance);
-		transitByte(0x0D);
 		_delay_ms(1000);
-
 	}
 
 	return(0);
