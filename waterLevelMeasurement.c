@@ -35,7 +35,7 @@ volatile char goodReturn=0;
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
 	TIMSK1 |= (1<<ICIE1) | (1<<OCIE1A);
-	OCR1A = 40000;
+	OCR1A = 50000;
 }
 
 static void sendDistance(void){
@@ -69,7 +69,7 @@ ISR(TIMER1_CAPT_vect){
 
 ISR(TIMER1_COMPA_vect){
 	if(~goodReturn){
-		distance = 0x11111111;
+		distance = 11111111;
 		sendDistance();
 		TCNT1 = 0;
 		TCCR1B |= (1<<ICES1);
@@ -86,8 +86,8 @@ int main(){
 
 	while(1){
 		TCNT1 = 0;
-		goodReturn = 0;
 		generatePulse();
+		goodReturn = 0;
 		_delay_ms(1000);
 	}
 
