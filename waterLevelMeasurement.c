@@ -34,7 +34,7 @@ static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11);
 	TIMSK1 |= (1<<TOIE1);
 }
-
+/*
 ISR(INT0_vect){
 	if (PIND & (1<<ECHO_PIN)) {
 		TCNT1 = 0;
@@ -44,16 +44,17 @@ ISR(INT0_vect){
 		distance = elapsedCounts / 58;
 	}
 }
+*/
 
 ISR(TIMER1_OVF_vect){
 	// Generate a 12us pulse to trigger the HR-SR04
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
-	_delay_us(15);
+	_delay_ms(15);
 	TRIGGER_PORT |= (1<<TRIGGER_PIN);
-	_delay_us(15);
+	_delay_ms(15);
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 
-	TCNT1 = 0;
+	//TCNT1 = 0;
 }
 
 
@@ -75,4 +76,6 @@ int main(){
 		}
 		*/
 	}
+	
+	return(0);
 }
