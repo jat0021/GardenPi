@@ -33,7 +33,16 @@ volatile uint32_t distance;
 
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
-	TIMSK1 |= (1<<TOIE1) | (1<<ICIE1);
+	TIMSK1 |= (1<<ICIE1);
+}
+
+static inline void generatePulse(void){
+	// Generate a 12us pulse to trigger the HR-SR04
+	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
+	_delay_us(15);
+	TRIGGER_PORT |= (1<<TRIGGER_PIN);
+	_delay_us(15);
+	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 }
 
 ISR(TIMER1_CAPT_vect){
@@ -48,29 +57,21 @@ ISR(TIMER1_CAPT_vect){
 	}
 }
 
-ISR(TIMER1_OVF_vect){
-	// Generate a 12us pulse to trigger the HR-SR04
-	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
-	_delay_us(15);
-	TRIGGER_PORT |= (1<<TRIGGER_PIN);
-	_delay_us(15);
-	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
-}
-
 int main(){
-	LED_DDR |= (1<<LED_PIN);			//Set data direction out for LED pin
+	//LED_DDR |= (1<<LED_PIN);			//Set data direction out for LED pin
 	TRIGGER_DDR |= (1<<TRIGGER_PIN);	//Set data direction out for TRIGGER pin
 
+	initUSART();
 	initTimer1();
 	sei();
 
 	while(1){
-		if (distance < DIST_THRESH){
-			LED_PORT |= (1<<LED_PIN);
-		}
-		else {
-			LED_PORT &= ~(1<<LED_PIN);
-		}
+		TCNT1 = 0;
+		generatePulse();
+		printWord(distance>>16);
+		printWord(distance);
+		_delay_ms(500);
+
 	}
 
 	return(0);
