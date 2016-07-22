@@ -20,8 +20,6 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #define LED_PORT		PORTB
 #define LED_DDR			DDRB
 
-#define CLOCK_FREQ 		8000000
-
 #define DIST_THRESH 	5
 
 #include <avr/io.h>
@@ -32,18 +30,13 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 volatile uint16_t elapsedCounts;
 volatile uint32_t distance=10;
 
-static inline void initTimer2(void){
-	TCCR2B |= (1<<CS22) | (1<<CS21) | (1<<CS20);
-	TIMSK2 |= (1<<TOIE2);
-
-}
-
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11);
+	TIMSK1 |= (1<<TOIE1);
 }
 
 ISR(INT0_vect){
-	if (ECHO_PORT & (1<<ECHO_PIN)) {
+	if (PIND & (1<<ECHO_PIN)) {
 		TCNT1 = 0;
 	}
 	else{
@@ -52,13 +45,21 @@ ISR(INT0_vect){
 	}
 }
 
-ISR(TIMER2_OVF_vect){
+ISR(TIMER1_OVF_vect){
+	LED_PORT |= (1<<LED_PIN);
+	_delay_ms(100);
+	LED_PORT &= ~(1<<LED_PIN);
+
+
+
 	// Generate a 12us pulse to trigger the HR-SR04
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
 	_delay_us(15);
-	TRIGGER_PORT |= (1<<PIN5);
+	TRIGGER_PORT |= (1<<TRIGGER_PIN);
 	_delay_us(15);
 	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
+
+	TCNT1 = 0;
 }
 
 
@@ -68,15 +69,16 @@ int main(){
 	TRIGGER_DDR |= (1<<TRIGGER_PIN);	//Set data direction out for TRIGGER pin
 
 	initTimer1();
-	initTimer2();
 	sei();
 
 	while(1){
+		/*
 		if (distance < DIST_THRESH){
 			LED_PORT |= (1<<LED_PIN);
 		}
 		else {
 			LED_PORT &= ~(1<<LED_PIN);
 		}
+		*/
 	}
 }
