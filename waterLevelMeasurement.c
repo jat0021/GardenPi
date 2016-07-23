@@ -81,7 +81,6 @@ ISR(TIMER1_OVF_vect){
 }
 
 ISR(USART_RX_vect){
-	LED_PORT |= (1<<LED_PIN);
 	byteReceived = receiveByte();
 	if(byteReceived == UART_TRIG_BYTE){
 		TCNT1 = 0;
@@ -102,10 +101,8 @@ int main(){
 	sei();
 
 	while(1){
-/*
 		_delay_ms(750);
 		LED_PORT ^= (1<<LED_PIN);
-*/
 	}
 
 	return(0);
