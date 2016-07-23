@@ -48,9 +48,9 @@ while(1)
 	sp.write(b'\x01')
 	time.sleep(0.1)
 	dataRead = sp.read(4)
-	if dataRead == b'\xFFFFFFFF':
+	if dataRead == b'\xFF\xFF':
 		print("Sensor Timeout Error")
-	elif dataRead == b'\xDDDDDDDD':
+	elif dataRead == b'\xDD\xDD':
 		print("UART Data Error")
 	else:
 		print("Distance = %04d cm" % dataRead, end="")

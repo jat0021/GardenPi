@@ -23,8 +23,8 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #define DIST_THRESH 		5
 
 #define UART_TRIG_BYTE 		0x01
-#define SENSOR_TIMEOUT		0xFFFFFFFF
-#define UART_BAD_RECEIVE 	0xDDDDDDDD
+#define SENSOR_TIMEOUT		0xFFFF
+#define UART_BAD_RECEIVE 	0xDDDD
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -33,8 +33,8 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 
 volatile uint8_t byteReceived;
 volatile uint16_t beginCount, endCount;
-volatile uint32_t elapsedCounts;
-volatile uint32_t distance;
+volatile uint16_t elapsedCounts;
+volatile uint16_t distance;
 volatile char goodReturn=1;
 
 static inline void initTimer1(void){
@@ -42,8 +42,7 @@ static inline void initTimer1(void){
 	TIMSK1 |= (1<<ICIE1) | (1<<TOIE1) | (1<<ICNC1);
 }
 
-static void sendData(uint32_t dataToSend){
-	printWord(dataToSend>>16);
+static void sendData(uint16_t dataToSend){
 	printWord(dataToSend);
 	transmitByte(0x0D);
 }
