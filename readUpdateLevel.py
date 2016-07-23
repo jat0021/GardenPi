@@ -43,7 +43,7 @@ sp.flushOutput()
 #---------------------------------
 # MAIN PROGRAM LOOP
 #---------------------------------
-while(1)
+while(1):
 	os.system('clear')
 	sp.write(b'\x01')
 	time.sleep(0.1)
