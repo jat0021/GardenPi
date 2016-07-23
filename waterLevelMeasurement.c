@@ -39,7 +39,7 @@ volatile char goodReturn=1;
 
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
-	TIMSK1 |= (1<<ICIE1) | (1<<TOIE1) | (1<<ICNC1);
+	TIMSK1 |= (1<<ICIE1) | (1<<ICNC1);
 }
 
 static void sendData(uint16_t dataToSend){
@@ -67,6 +67,7 @@ ISR(TIMER1_CAPT_vect){
 		goodReturn = 1;
 		sendData(distance);
 		TCCR1B |= (1<<ICES1);
+		TIMSK1 &= ~(1<<TOIE1);
 	}
 }
 
@@ -75,14 +76,17 @@ ISR(TIMER1_OVF_vect){
 		sendData(SENSOR_TIMEOUT);
 		TCNT1 = 0;
 		TCCR1B |= (1<<ICES1);
+		TIMSK1 &= ~(1<<TOIE1);
 	}
 }
 
 ISR(USART_RX_vect){
+	LED_PORT |= (1<<LED_PIN);
 	byteReceived = receiveByte();
 	if(byteReceived == UART_TRIG_BYTE){
 		TCNT1 = 0;
 		generatePulse();
+		TIMSK1 |= (1<<TOIE1);
 	}
 	else{
 		sendData(UART_BAD_RECEIVE);
@@ -98,8 +102,10 @@ int main(){
 	sei();
 
 	while(1){
+/*
 		_delay_ms(750);
 		LED_PORT ^= (1<<LED_PIN);
+*/
 	}
 
 	return(0);
