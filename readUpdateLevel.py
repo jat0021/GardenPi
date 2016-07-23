@@ -44,17 +44,23 @@ sp.flushOutput()
 # MAIN PROGRAM LOOP
 #---------------------------------
 while(1):
+	# Clear Screen
 	os.system('clear')
+
+	# Write sensor trigger byte to atmega
 	sp.write(b'\x01')
-	time.sleep(0.1)
-	dataRead = sp.read(4)
-	if dataRead == b'\xFF\xFF':
+
+	# Read sensor data from atmega
+	dataRead = sp.read(5)
+	if dataRead == b'65535':
 		print("Sensor Timeout Error")
-	elif dataRead == b'\xDD\xDD':
+	elif dataRead == b'56797':
 		print("UART Data Error")
 	else:
+		sensorStr = dataRead.decode()
+		sensorData = int(sensorStr[1:5])
 		print("Distance = %04d cm" % dataRead, end="")
-		worksheet.update_cell(2,3, dataRead)
+		worksheet.update_cell(2,3, sensorData)
 
 	time.sleep(1)
 
