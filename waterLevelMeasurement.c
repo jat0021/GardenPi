@@ -44,7 +44,6 @@ static inline void initTimer1(void){
 
 static void sendData(uint16_t dataToSend){
 	printWord(dataToSend);
-	transmitByte(0x0D);
 }
 
 static inline void generatePulse(void){
