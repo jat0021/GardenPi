@@ -8,9 +8,9 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #define F_CPU 				8000000UL
 #endif
 
-#define TRIGGER_PIN			PD4
-#define TRIGGER_PORT 		PORTD
-#define TRIGGER_DDR			DDRD
+#define SONIC_TRIG1_PIN		PD4
+#define SONIC_TRIG1_PORT 	PORTD
+#define SONIC_TRIG1_DDR		DDRD
 
 #define ECHO_PIN			PB0
 #define ECHO_PORT			PORTB
@@ -43,16 +43,17 @@ static inline void initTimer1(void){
 }
 
 static void sendData(uint16_t dataToSend){
-	printWord(dataToSend);
+	transmitByte(dataToSend >> 8);
+	transmitByte(dataToSend);
 }
 
 static inline void generatePulse(void){
-	// Generate a 12us pulse to trigger the HR-SR04
-	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
+	// Generate a 12us pulse to SONIC_TRIG1 the HR-SR04
+	SONIC_TRIG1_PORT &= ~(1<<SONIC_TRIG1_PIN);
 	_delay_us(15);
-	TRIGGER_PORT |= (1<<TRIGGER_PIN);
+	SONIC_TRIG1_PORT |= (1<<SONIC_TRIG1_PIN);
 	_delay_us(15);
-	TRIGGER_PORT &= ~(1<<TRIGGER_PIN);
+	SONIC_TRIG1_PORT &= ~(1<<SONIC_TRIG1_PIN);
 }
 
 ISR(TIMER1_CAPT_vect){
@@ -94,7 +95,7 @@ ISR(USART_RX_vect){
 
 int main(){
 	LED_DDR |= (1<<LED_PIN);			//Set data direction out for LED pin
-	TRIGGER_DDR |= (1<<TRIGGER_PIN);	//Set data direction out for TRIGGER pin
+	SONIC_TRIG1_DDR |= (1<<SONIC_TRIG1_PIN);	//Set data direction out for SONIC_TRIG1 pin
 
 	initUSART();
 	initTimer1();
