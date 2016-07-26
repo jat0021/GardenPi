@@ -146,8 +146,10 @@ ISR(USART_RX_vect){
 
 	// Switch to determine which function to run
 	switch(*dataIn[0]){
+
+		// Read water tank level
 		case WATER_TANK_LVL:
-			readWaterTankLvl();
+			readWaterTankLvl(*dataIn[1]);
 			break;
 
 		default:
@@ -166,8 +168,13 @@ int main(){
 	//Set data direction out for SONIC_TRIG1 pin
 	TRIG1_DDR |= (1 << TRIG1_PIN);
 
-	initUSART();
+	// Initialize AVR hardware UART
+	initUART();
+
+	// Initialize timer1
 	initTimer1();
+
+	// Enable global interrupts
 	sei();
 
 	while(1){
