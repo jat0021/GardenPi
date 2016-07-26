@@ -7,8 +7,9 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "GardenPi.h"
+#include "GardenPiUARTBytes.h"
 #include "UART.h"
+#include "GardenPi.h"
 
 //--------------------------------------------------------------
 // GLOBAL VARIABLE DEFINITIONS
