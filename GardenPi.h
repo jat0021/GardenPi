@@ -12,7 +12,7 @@ the GardenPi.c program
 //---------------------------------------------------------------
 // DEFINE CONSTANTS
 //---------------------------------------------------------------
-// Define CPU clock frequency
+// Define CPU clock frequency if not already defined
 #ifndef F_CPU
 #define F_CPU 		8000000UL
 #endif
@@ -24,11 +24,13 @@ the GardenPi.c program
 #define ECHO_DDR	DDRB
 
 	// Trigger for sensor 1
+#define TANK1 		0x10
 #define TRIG1_PIN	PB6
 #define TRIG1_PORT 	PORTB
 #define TRIG1_DDR	DDRB
 
 	// Trigger for sensor 2
+#define TANK2		0x11
 #define TRIG2_PIN 	PB7
 #define TRIG2_PORT	PORTB
 #define TRIG2_DDR	DDRB
@@ -41,13 +43,13 @@ the GardenPi.c program
 //--------------------------------------------------------------
 // FUNCTION DEFINITIONS
 //--------------------------------------------------------------
-// Function to initialize 16-bit timer for use with HC-SR04 sensor
+// Initialize 16-bit timer for use with HC-SR04 sensor
 static inline void initTimer1(void);
 
-// Function to send data
-static void sendData(uint16_t dataToSend);
-
-// Function to trigger HC-SR04 sensor
+// Trigger HC-SR04 sensor
 static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin);
+
+// Read water level in tank
+static void readWaterTankLvl(void);
 
 #endif
