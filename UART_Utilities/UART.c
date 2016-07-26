@@ -81,6 +81,7 @@ uint8_t receiveByte(void) {
 // Handle UART communication error
 void commError(){
     transmitByte(UART_COMM_ERROR);
+    transmitByte(END_MSG);
 
     // Flush receive buffer by temporarily disabling RXEN0
     UCSR0B &= ~(1 << RXEN0);
@@ -127,6 +128,11 @@ int * receiveMessage(void){
     // RasPi initialize request to AVR
     else if(dataByteIn == RASPI_INIT_TO_AVR){
         transmitByte(AVR_INIT_TO_RASPI);
+
+        // Write initialized byte to array
+        for(i=0; i<4; i++){
+            msgArray[i] = AVR_INIT_TO_RASPI;
+        }
     }
 
     // Improper initial communication byte, call commError()
