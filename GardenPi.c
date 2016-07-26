@@ -100,6 +100,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 // INTERRUPT ROUTINES
 //---------------------------------------------------------------
 // Timer 1 capture interrupt to measure distance with HC-SR04 sensor
+/*
 ISR(TIMER1_CAPT_vect){
 	// On rising capture edge
 	if(TCCR1B & (1<<ICES1)){
@@ -139,6 +140,7 @@ ISR(TIMER1_OVF_vect){
 	// Set water level interrupt done flag
 	wtrLvlISRDone = 1;
 }
+*/
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
