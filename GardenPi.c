@@ -15,8 +15,8 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 // GLOBAL VARIABLE DEFINITIONS
 //--------------------------------------------------------------
 volatile uint8_t byteReceived, wtrLvlISRDone;
-volatile uint8_t dataToSend[4];
-volatile uint8_t *dataIn;
+volatile int dataToSend[4];
+volatile int *dataIn;
 volatile uint16_t beginCount, endCount;
 volatile uint16_t elapsedCounts;
 volatile uint16_t distance;
@@ -145,11 +145,11 @@ ISR(USART_RX_vect){
 	dataIn = receiveMessage();
 
 	// Switch to determine which function to run
-	switch(*dataIn[0]){
+	switch(dataIn[0]){
 
 		// Read water tank level
 		case WATER_TANK_LVL:
-			readWaterTankLvl(*dataIn[1]);
+			readWaterTankLvl(dataIn[1]);
 			break;
 
 		default:

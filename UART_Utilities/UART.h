@@ -37,7 +37,7 @@ void initUART(void);
 // LOW LEVEL Tx/Rx FUNCTIONS
 //---------------------------------------------------------------
 // Transmit one byte of data
-uint8_t transmitByte(uint8_t data);
+void transmitByte(uint8_t data);
 
 // Receive one byte of data
 uint8_t receiveByte(void);
@@ -55,9 +55,9 @@ void commError();
 //--------------------------------------------------------------
 // This function will receive a full request message from a
 // RasPi and return proper confirmation bytes
-uint8_t * receiveMessage(void);
+int * receiveMessage(void);
 
 // This function will transmit a full message to RasPi
-uint8_t transmitMessage(volatile uint8_t sendData[4]);
+uint8_t transmitMessage(volatile int sendData[4]);
 
 #endif

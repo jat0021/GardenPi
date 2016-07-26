@@ -93,12 +93,12 @@ void commError(){
 //--------------------------------------------------------------
 // This function will receive a full request message from a
 // RasPi and return proper confirmation bytes
-uint8_t * receiveMessage(void){
+int * receiveMessage(void){
     // Hold inital byte received
     uint8_t dataByteIn, i;
 
     // Array to hold received data
-    static uint8_t msgArray[4];
+    static int msgArray[4];
 
     // Receive initial byte
     dataByteIn = receiveByte();
@@ -136,7 +136,7 @@ uint8_t * receiveMessage(void){
 }
 
 // This function will transmit a full message to RasPi
-uint8_t transmitMessage(volatile uint8_t sendData[4]){
+uint8_t transmitMessage(volatile int sendData[4]){
     // Initialize loop counter
     uint8_t i;
 
