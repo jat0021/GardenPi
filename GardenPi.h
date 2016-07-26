@@ -50,6 +50,6 @@ static inline void initTimer1(void);
 static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin);
 
 // Read water level in tank
-static void readWaterTankLvl(void);
+static void readWaterTankLvl(uint8_t sensorCode);
 
 #endif

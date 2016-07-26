@@ -8,7 +8,7 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "GardenPi.h"
-#include "USART.h"
+#include "UART.h"
 
 //--------------------------------------------------------------
 // GLOBAL VARIABLE DEFINITIONS
@@ -77,8 +77,10 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	distance = (endCount - beginCount) / 58;
 
 	// Populate data out array
-	dataToSend = {WATER_TANK_LVL, sensorCode, 
-		(distance >> 8), distance};
+	dataToSend[0] = WATER_TANK_LVL;
+	dataToSend[1] = sensorCode;
+	dataToSend[2] = (distance >> 8);
+	dataToSend[3] = distance};
 
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
