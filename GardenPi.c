@@ -48,14 +48,14 @@ static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin){
 
 // Read water level in tank using HC-SR04 sensor
 static void readWaterTankLvl(uint8_t sensorCode){
+	// Good send flag
+	uint8_t goodSend, i;
+	
 	for(i=0; i<5; i++){
 		LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
 		_delay_ms(500);
 	}
 	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
-
-	// Good send flag
-	uint8_t goodSend, i;
 
 	// Clear timer1
 	TCNT1 = 0;
