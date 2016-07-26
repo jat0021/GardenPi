@@ -92,7 +92,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 			LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
 			_delay_ms(500);
 		}
-		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG2_PIN);
+		LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
 	}
 }
 
