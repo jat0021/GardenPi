@@ -37,6 +37,7 @@ static inline void initTimer1(void){
 /*Trigger HC-SR04
   This function will trigger an HC-SR04 ultrasonic range seNsor
   by generating a 15us HIGH pulse on the selected trigger pin */
+/*
 static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin){
 	trigPort &= ~(1<<trigPin);
 	_delay_us(15);
@@ -95,7 +96,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
 	}
 }
-
+*/
 //---------------------------------------------------------------
 // INTERRUPT ROUTINES
 //---------------------------------------------------------------
@@ -190,7 +191,7 @@ int main(){
 	initUART();
 
 	// Initialize timer1
-	initTimer1();
+//	initTimer1();
 
 	// Enable global interrupts
 	sei();
