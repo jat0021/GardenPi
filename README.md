@@ -1,6 +1,12 @@
-tankLevel
+GardenPi
 =========
-Measure water level in capture tank using Atmega and Raspberry Pi
+Full utility to manage many aspect of keeping a healthy and well tended garden
+Features include:
+*Measure water level in capture tank using Atmega and Raspberry Pi
+
+Features to be added:
+*Measure soil moisture
+*Automatically water sectors of garden to maintain proper soil moisture level
 
 
 Credits
