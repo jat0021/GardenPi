@@ -149,6 +149,7 @@ ISR(USART_RX_vect){
 	_delay_ms(1000);
 	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PORT);
 
+/*
 	// Call UART utility to return pointer to incoming data
 	dataIn = receiveMessage();
 
@@ -166,6 +167,7 @@ ISR(USART_RX_vect){
 		default:
 			commError();
 	}
+*/
 }
 
 
