@@ -60,7 +60,7 @@ void initUART(void) {
 //This function will transmit one byte of data over UART
 void transmitByte(uint8_t data) {
     // Loop until transmit data register is empty
-    while(UCSR0A & (1 << UDRE0)){}
+    while(!(UCSR0A & (1 << UDRE0))){}
 
     // Write byte to transmit data register to send
     UDR0 = data;
@@ -69,7 +69,7 @@ void transmitByte(uint8_t data) {
 // This function will receive one byte of data over UART
 uint8_t receiveByte(void) {
     // Loop until receive data register has data
-    while(UCSR0A & (1 << RXC0)){}
+    while(!(UCSR0A & (1 << RXC0))){}
 
     // Read data from receive register
     return UDR0;
@@ -107,12 +107,12 @@ int * receiveMessage(void){
     // RasPi normal request message to AVR
     if (dataByteIn == RASPI_REQ_AVR){
         // Add debug LED 1 - flash 2 times
-        LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+        LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
         for(i=0; i<2; i++){
-            LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
+            LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
             _delay_ms(1000);
         }
-        LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+        LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
         
         // Transmit AVR ready to receive message
         transmitByte(AVR_READY);
@@ -134,6 +134,14 @@ int * receiveMessage(void){
 
     // RasPi initialize request to AVR
     else if(dataByteIn == RASPI_INIT_TO_AVR){
+        // Add debug LED 1 - flash 2 times
+        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
+        for(i=0; i<2; i++){
+            LED_DEBUG3_PORT ^= (1 << LED_DEBUG3_PIN);
+            _delay_ms(1000);
+        }
+        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
+	    
         transmitByte(AVR_INIT_TO_RASPI);
 
         // Write initialized byte to array
@@ -144,6 +152,13 @@ int * receiveMessage(void){
 
     // Improper initial communication byte, call commError()
     else{
+        // Add debug LED 1 - flash 2 times
+        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
+        for(i=0; i<6; i++){
+            LED_DEBUG3_PORT ^= (1 << LED_DEBUG3_PIN);
+            _delay_ms(1000);
+        }
+        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
         commError();
     }
 
