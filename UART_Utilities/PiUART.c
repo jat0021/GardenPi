@@ -1,138 +1,174 @@
-
 /*
-  Quick and dirty functions that make serial communications work.
+    John Talbot
+    July 25, 2016
+    
+    PiUART is a set of functions allowing the AVR and RasPi to 
+    communicate over UART. For use with GardenPi code
 
-  Note that receiveByte() blocks -- it sits and waits _forever_ for
-   a byte to come in.  If you're doing anything that's more interesting,
-   you'll want to implement this with interrupts.
+    Code modified from USART.h and USART.c files from Make: Programming
+    AVR by Elliot Williams for use with GardenPi package
 
-   initUSART requires BAUDRATE to be defined in order to calculate
-     the bit-rate multiplier.  9600 is a reasonable default.
-
-  May not work with some of the older chips:
-    Tiny2313, Mega8, Mega16, Mega32 have different pin macros
-    If you're using these chips, see (e.g.) iom8.h for how it's done.
-    These old chips don't specify UDR0 vs UDR1.
-    Correspondingly, the macros will just be defined as UDR.
+    License included in UART_Utilities file
 */
 
 #include <avr/io.h>
-#include "USART.h"
+#include <util/delay.h>
 #include <util/setbaud.h>
+#include <avr/interrupt.h>
+#include "UART.h"
+#include "GardenPiUARTBytes.h"
 
-void initUART(void) {                                /* requires BAUD */
-  UBRR0H = UBRRH_VALUE;                        /* defined in setbaud.h */
-  UBRR0L = UBRRL_VALUE;
+//---------------------------------------------------------------
+// INITIALIZATION
+//---------------------------------------------------------------
+/*
+    This function will initialize UART communications on the AVR
+    using speeds calculated by setbaud.h and using 8 data bits 
+    with 1 stop bit
+*/
+void initUART(void) {
+    // Values defined in setbaud.h
+    UBRR0H = UBRRH_VALUE;
+    UBRR0L = UBRRL_VALUE;
+
+    // Use double speed Tx/Rx if flag is set in setbaud.h
 #if USE_2X
-  UCSR0A |= (1 << U2X0);
+    UCSR0A |= (1 << U2X0);
 #else
-  UCSR0A &= ~(1 << U2X0);
+    UCSR0A &= ~(1 << U2X0);
 #endif
-                                  /* Enable USART transmitter/receiver */
-  UCSR0B = (1 << TXEN0) | (1 << RXEN0) | (1<<RXCIE0);
-  UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);   /* 8 data bits, 1 stop bit */
+  
+    // Enable UART transmitter/receiver
+    UCSR0B = (1 << TXEN0) | (1 << RXEN0);
 
+    // Enable UART receive interrupt in register if flag enabled
+    // in UART.h header file
+    if(ENABLE_RX_INTERRUPT){
+        UCSR0B |= (1 << RXCIE0);
+    }
+    else{
+        UCSR0B &= ~(1 << RXCIE0);
+    }
+
+    // 8 data bits, 1 stop bit
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 }
 
-
+//--------------------------------------------------------------
+// LOW LEVEL Tx/Rx FUNCTIONS
+//--------------------------------------------------------------
+//This function will transmit one byte of data over UART
 void transmitByte(uint8_t data) {
-                                     /* Wait for empty transmit buffer */
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = data;                                            /* send data */
+    // Loop until transmit data register is empty
+    while(UCSROA & (1 << UDRE0)){}
+
+    // Write byte to transmit data register to send
+    UDR0 = data;
 }
 
+// This function will receive one byte of data over UART
 uint8_t receiveByte(void) {
-  loop_until_bit_is_set(UCSR0A, RXC0);       /* Wait for incoming data */
-  return UDR0;                                /* return register value */
+    // Loop until receive data register has data
+    while(UCSROA & (1 << RXC0)){}
+
+    // Read data from receive register
+    return UDR0;
 }
 
+//--------------------------------------------------------------
+// MID LEVEL MESSAGE FUNCTIONS
+//--------------------------------------------------------------
+// Handle UART communication error
+void commError(){
+    transmitByte(UART_COMM_ERROR);
 
-                       /* Here are a bunch of useful printing commands */
-
-void printString(const char myString[]) {
-  uint8_t i = 0;
-  while (myString[i]) {
-    transmitByte(myString[i]);
-    i++;
-  }
+    // Flush receive buffer by temporarily disabling RXEN0
+    UCSR0B &= ~(1 << RXEN0);
+    delay_us_(25);
+    UCSR0B |= (1 << RXEN0);
 }
 
-void readString(char myString[], uint8_t maxLength) {
-  char response;
-  uint8_t i;
-  i = 0;
-  while (i < (maxLength - 1)) {                   /* prevent over-runs */
-    response = receiveByte();
-    transmitByte(response);                                    /* echo */
-    if (response == '\r') {                     /* enter marks the end */
-      break;
+//--------------------------------------------------------------
+// HIGH LEVEL MESSAGE FUNCTIONS
+//--------------------------------------------------------------
+// This function will receive a full request message from a
+// RasPi and return proper confirmation bytes
+uint8_t * receiveMessage(void){
+    // Hold inital byte received
+    uint8_t dataByteIn, i;
+
+    // Array to hold received data
+    static uint8_t msgArray[4];
+
+    // Receive initial byte
+    dataByteIn = receiveByte();
+
+    // RasPi normal request message to AVR
+    if (dataByteIn == RASPI_REQ_AVR){
+        
+        // Transmit AVR ready to receive message
+        transmitByte(AVR_READY);
+        
+        // Loop through next four data bytes and store in array
+        for(i=0, i<4, i++){
+            msgArray[i] = receiveByte();
+        }
+
+        // If message is not properly terminated write error code
+        // to entire array and call commError()
+        if(receiveByte() != END_MSG){
+            for (i=0, i<4, i++){
+                msgArray[i] = UART_COMM_ERROR;
+            }
+            commError();
+        }
     }
-    else {
-      myString[i] = response;                       /* add in a letter */
-      i++;
+
+    // RasPi initialize request to AVR
+    else if(dataByteIn == RASPI_INIT_TO_AVR){
+        transmitByte(AVR_INIT_TO_RASPI);
     }
-  }
-  myString[i] = 0;                          /* terminal NULL character */
+
+    // Improper initial communication byte, call commError()
+    else{
+        commError();
+    }
 }
 
-void printByte(uint8_t byte) {
-              /* Converts a byte to a string of decimal text, sends it */
-  transmitByte('0' + (byte / 100));                        /* Hundreds */
-  transmitByte('0' + ((byte / 10) % 10));                      /* Tens */
-  transmitByte('0' + (byte % 10));                             /* Ones */
-}
+// This function will transmit a full message to RasPi
+uint8_t transmitMessage(uint8_t sendData[4]){
+    // Initialize loop counter
+    uint8_t i;
 
-void printWord(uint16_t word) {
-  transmitByte('0' + (word / 10000));                 /* Ten-thousands */
-  transmitByte('0' + ((word / 1000) % 10));               /* Thousands */
-  transmitByte('0' + ((word / 100) % 10));                 /* Hundreds */
-  transmitByte('0' + ((word / 10) % 10));                      /* Tens */
-  transmitByte('0' + (word % 10));                             /* Ones */
-}
+    // Clear global interrupt to stop receive interrupt
+    cli();
 
-void printBinaryByte(uint8_t byte) {
-                       /* Prints out a byte as a series of 1's and 0's */
-  uint8_t bit;
-  for (bit = 7; bit < 255; bit--) {
-    if (bit_is_set(byte, bit))
-      transmitByte('1');
-    else
-      transmitByte('0');
-  }
-}
+    // Send AVR request RasPi byte
+    transmitByte(AVR_REQ_RASPI);
 
-char nibbleToHexCharacter(uint8_t nibble) {
-                                   /* Converts 4 bits into hexadecimal */
-  if (nibble < 10) {
-    return ('0' + nibble);
-  }
-  else {
-    return ('A' + nibble - 10);
-  }
-}
+    // Wait for response from RasPi
+    // **** This has possibility of hanging program -- needs improvement!
+    if (receiveByte() == RASPI_READY){
+        // Loop to send all of data array
+        for(i=0, i<4, i++){
+            transmitByte(sendData[i]);
+        }
 
-void printHexByte(uint8_t byte) {
-                        /* Prints a byte as its hexadecimal equivalent */
-  uint8_t nibble;
-  nibble = (byte & 0b11110000) >> 4;
-  transmitByte(nibbleToHexCharacter(nibble));
-  nibble = byte & 0b00001111;
-  transmitByte(nibbleToHexCharacter(nibble));
-}
+        // Transmit end of message byte
+        transmitByte(END_MSG);
 
-uint8_t getNumber(void) {
-  // Gets a numerical 0-255 from the serial port.
-  // Converts from string to number.
-  char hundreds = '0';
-  char tens = '0';
-  char ones = '0';
-  char thisChar = '0';
-  do {                                                   /* shift over */
-    hundreds = tens;
-    tens = ones;
-    ones = thisChar;
-    thisChar = receiveByte();                   /* get a new character */
-    transmitByte(thisChar);                                    /* echo */
-  } while (thisChar != '\r');                     /* until type return */
-  return (100 * (hundreds - '0') + 10 * (tens - '0') + ones - '0');
+        // return 0 for sucessful send
+        return 0;
+    }
+
+    // If improper response is received, call commError()
+    else{
+        commError();
+
+        // Return 1 for bad send
+        return 1;
+    }
+
+    // reenable global interrupts
+    sei();
 }

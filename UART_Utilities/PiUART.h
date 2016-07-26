@@ -1,25 +1,63 @@
-/* Functions to initialize, send, receive over USART
+/*
+	John Talbot
+	July 25, 2016
+	
+	PiUART is a set of functions allowing the AVR and RasPi to 
+	communicate over UART. For use with GardenPi code
 
-   initUSART requires BAUD to be defined in order to calculate
-     the bit-rate multiplier.
- */
+	Code modified from USART.h and USART.c files from Make: Programming
+	AVR by Elliot Williams for use with GardenPi package
+
+	License included in UART_Utilities file
+*/
 
 #ifndef _UART_H_
 #define _UART_H_  1
 
-#ifndef BAUD                          /* if not defined in Makefile... */
-#define BAUD  9600                     /* set a safe default baud rate */
+// Define default baud rate
+#ifndef BAUD
+#define BAUD  9600
 #endif
 
+// Enable/Disable UART receive interrupt (1=Enabled / 0=Disabled)
+#define ENABLE_RX_INTERRUPT 1
+
+
+//---------------------------------------------------------------
+// INITIALIZATION FUNCTION
+//---------------------------------------------------------------
 /* Takes the defined BAUD and F_CPU,
    calculates the bit-clock multiplier,
-   and configures the hardware USART                   */
+   and configures the hardware UART
+*/
 void initUART(void);
 
-/* Blocking transmit and receive functions.
-   When you call receiveByte() your program will hang until
-   data comes through.  We'll improve on this later. */
+
+//---------------------------------------------------------------
+// LOW LEVEL Tx/Rx FUNCTIONS
+//---------------------------------------------------------------
+// Transmit one byte of data
 uint8_t transmitByte(uint8_t data);
+
+// Receive one byte of data
 uint8_t receiveByte(void);
+
+
+//--------------------------------------------------------------
+// MID LEVEL MESSAGE FUNCTIONS
+//--------------------------------------------------------------
+// Handle UART communication error
+void commError();
+
+
+//--------------------------------------------------------------
+// HIGH LEVEL MESSAGE FUNCTIONS
+//--------------------------------------------------------------
+// This function will receive a full request message from a
+// RasPi and return proper confirmation bytes
+uint8_t * receiveMessage(void);
+
+// This function will transmit a full message to RasPi
+uint8_t transmitMessage(uint8_t sendData[4]);
 
 #endif
