@@ -81,7 +81,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	dataToSend[0] = WATER_TANK_LVL;
 	dataToSend[1] = sensorCode;
 	dataToSend[2] = (distance >> 8);
-	dataToSend[3] = distance};
+	dataToSend[3] = distance;
 
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
