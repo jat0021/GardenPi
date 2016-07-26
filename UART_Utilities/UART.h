@@ -22,6 +22,22 @@
 // Enable/Disable UART receive interrupt (1=Enabled / 0=Disabled)
 #define ENABLE_RX_INTERRUPT 1
 
+// Define LED debugging constants
+	// Debugging LED 1
+#define LED_DEBUG1_PIN		PC1
+#define LED_DEBUG1_PORT		PORTC
+#define LED_DEBUG1_DDR		DDRC
+
+	// Debugging LED 2
+#define LED_DEBUG2_PIN		PC2
+#define LED_DEBUG2_PORT		PORTC
+#define LED_DEBUG2_DDR		DDRC
+
+	// Debugging LED 3
+#define LED_DEBUG3_PIN		PC3
+#define LED_DEBUG3_PORT		PORTC
+#define LED_DEBUG3_DDR		DDRC
+
 
 //---------------------------------------------------------------
 // INITIALIZATION FUNCTION

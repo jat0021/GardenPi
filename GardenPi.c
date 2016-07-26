@@ -89,9 +89,10 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Blink LED to indicate send error
 	if(~goodSend){
 		for(i=0; i<5; i++){
-			LED_PORT ^= (1 << LED_PIN);
-			_delay_ms(100);
+			LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
+			_delay_ms(500);
 		}
+		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG2_PIN);
 	}
 }
 
@@ -141,8 +142,12 @@ ISR(TIMER1_OVF_vect){
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
-	// Debug - turn LED on constant
-	LED_PORT |= (1 << LED_PIN);
+	// Debug - flash debug LED 1 - one time
+	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PORT);
+	_delay_ms(1000);
+	LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PORT);
+	_delay_ms(1000);
+	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PORT);
 
 	// Call UART utility to return pointer to incoming data
 	dataIn = receiveMessage();
@@ -168,8 +173,11 @@ ISR(USART_RX_vect){
 // MAIN FUNCTION
 //--------------------------------------------------------------
 int main(){
-	//Set data direction out for LED pin
-	LED_DDR |= (1 << LED_PIN);
+	//Set data direction out for LED pins
+	LED_STATUS_DDR |= (1 << LED_STATUS_PIN);
+	LED_DEBUG1_DDR |= (1 << LED_DEBUG1_PIN);
+	LED_DEBUG2_DDR |= (1 << LED_DEBUG2_PIN);
+	LED_DEBUG3_DDR |= (1 << LED_DEBUG3_PIN);
 
 	//Set data direction out for SONIC_TRIG1 pin
 	TRIG1_DDR |= (1 << TRIG1_PIN);
@@ -185,7 +193,7 @@ int main(){
 
 	while(1){
 		_delay_ms(750);
-		LED_PORT ^= (1 << LED_PIN);
+		LED_STATUS_PORT ^= (1 << LED_STATUS_PIN);
 	}
 
 	return(0);

@@ -35,10 +35,12 @@ the GardenPi.c program
 #define TRIG2_PORT	PORTB
 #define TRIG2_DDR	DDRB
 
-// Define LED status pin
-#define LED_PIN		PC0
-#define LED_PORT	PORTC
-#define LED_DDR		DDRC
+// Define LED status pins
+	// Status LED pin
+#define LED_STATUS_PIN		PC0
+#define LED_STATUS_PORT		PORTC
+#define LED_STATUS_DDR		DDRC
+
 
 //--------------------------------------------------------------
 // FUNCTION DEFINITIONS

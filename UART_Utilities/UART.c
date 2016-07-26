@@ -106,6 +106,13 @@ int * receiveMessage(void){
 
     // RasPi normal request message to AVR
     if (dataByteIn == RASPI_REQ_AVR){
+        // Add debug LED 1 - flash 2 times
+        LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+        for(i=0; i<2; i++){
+            LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
+            _delay_ms(1000);
+        }
+        LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
         
         // Transmit AVR ready to receive message
         transmitByte(AVR_READY);
