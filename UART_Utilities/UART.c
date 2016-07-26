@@ -110,7 +110,7 @@ uint8_t * receiveMessage(void){
         transmitByte(AVR_READY);
         
         // Loop through next four data bytes and store in array
-        for(i=0, i<4, i++){
+        for(i=0; i<4; i++){
             msgArray[i] = receiveByte();
         }
 
@@ -150,7 +150,7 @@ uint8_t transmitMessage(volatile uint8_t sendData[4]){
     // **** This has possibility of hanging program -- needs improvement!
     if (receiveByte() == RASPI_READY){
         // Loop to send all of data array
-        for(i=0, i<4, i++){
+        for(i=0; i<4; i++){
             transmitByte(sendData[i]);
         }
 

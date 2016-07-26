@@ -88,7 +88,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 
 	// Blink LED to indicate send error
 	if(~goodSend){
-		for(i=0, i<5, i++){
+		for(i=0; i<5; i++){
 			LED_PORT ^= (1 << LED_PIN);
 			_delay_ms(100);
 		}
