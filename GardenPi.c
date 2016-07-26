@@ -26,11 +26,12 @@ volatile uint16_t distance;
 // INITIALIZATION FUNCTIONS
 //---------------------------------------------------------------
 // Initialize 16-bit timer for use with HC-SR04 sensor
+/*
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
 	TIMSK1 |= (1<<ICIE1) | (1<<ICNC1);
 }
-
+*/
 //---------------------------------------------------------------
 // LOCAL FUNCTIONS
 //---------------------------------------------------------------
@@ -146,11 +147,11 @@ ISR(TIMER1_OVF_vect){
 // UART receive interrupt 
 ISR(USART_RX_vect){
 	// Debug - flash debug LED 1 - one time
-	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PORT);
+	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 	_delay_ms(1000);
-	LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PORT);
+	LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PIN);
 	_delay_ms(1000);
-	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PORT);
+	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 
 /*
 	// Call UART utility to return pointer to incoming data
