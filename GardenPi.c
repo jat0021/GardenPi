@@ -141,6 +141,9 @@ ISR(TIMER1_OVF_vect){
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
+	// Debug - turn LED on constant
+	LED_PORT |= (1 << LED_PIN);
+
 	// Call UART utility to return pointer to incoming data
 	dataIn = receiveMessage();
 
