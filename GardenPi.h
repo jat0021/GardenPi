@@ -1,12 +1,13 @@
 /* 
 John Talbot
 July 20, 2016
+
 This header defines all constants and functions to be used with
 the GardenPi.c program
 */
 
-#ifndef _GARDENPI_
-#define _GARDENPI_	1
+#ifndef _GARDENPI_H_
+#define _GARDENPI_H_	1
 
 //---------------------------------------------------------------
 // DEFINE CONSTANTS

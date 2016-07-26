@@ -1,6 +1,7 @@
 /* 
 John Talbot
 July 20, 2016
+
 This program measures distance using an HC-SR04 ultrasonic sensor and then transmits mesaurement over UART
 */
 #include <avr/io.h>
@@ -72,8 +73,11 @@ ISR(USART_RX_vect){
 }
 
 int main(){
-	LED_DDR |= (1<<LED_PIN);			//Set data direction out for LED pin
-	SONIC_TRIG1_DDR |= (1<<SONIC_TRIG1_PIN);	//Set data direction out for SONIC_TRIG1 pin
+	//Set data direction out for LED pin
+	LED_DDR |= (1<<LED_PIN);
+
+	//Set data direction out for SONIC_TRIG1 pin
+	SONIC_TRIG1_DDR |= (1<<SONIC_TRIG1_PIN);
 
 	initUSART();
 	initTimer1();
