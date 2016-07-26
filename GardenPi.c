@@ -152,7 +152,7 @@ ISR(USART_RX_vect){
 			readWaterTankLvl(dataIn[1]);
 			break;
 
-		case AVR_INIT_TO_AVR:
+		case AVR_INIT_TO_RASPI:
 			break;
 
 		default:
