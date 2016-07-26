@@ -117,7 +117,7 @@ int * receiveMessage(void){
         // If message is not properly terminated write error code
         // to entire array and call commError()
         if(receiveByte() != END_MSG){
-            for (i=0, i<4, i++){
+            for (i=0; i<4; i++){
                 msgArray[i] = UART_COMM_ERROR;
             }
             commError();
