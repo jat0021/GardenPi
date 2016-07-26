@@ -58,6 +58,6 @@ void commError();
 uint8_t * receiveMessage(void);
 
 // This function will transmit a full message to RasPi
-uint8_t transmitMessage(uint8_t sendData[4]);
+uint8_t transmitMessage(volatile uint8_t sendData[4]);
 
 #endif
