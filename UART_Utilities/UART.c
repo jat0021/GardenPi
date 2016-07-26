@@ -133,6 +133,8 @@ int * receiveMessage(void){
     else{
         commError();
     }
+
+    return msgArray;
 }
 
 // This function will transmit a full message to RasPi
