@@ -3,6 +3,7 @@
 
 gpio -g mode 25 out
 gpio -g write 25 0
+make
 sleep 0.05
 gpio -g write 25 1
 sleep 0.05
