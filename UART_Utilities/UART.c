@@ -60,7 +60,7 @@ void initUART(void) {
 //This function will transmit one byte of data over UART
 void transmitByte(uint8_t data) {
     // Loop until transmit data register is empty
-    while(UCSROA & (1 << UDRE0)){}
+    while(UCSR0A & (1 << UDRE0)){}
 
     // Write byte to transmit data register to send
     UDR0 = data;
@@ -69,7 +69,7 @@ void transmitByte(uint8_t data) {
 // This function will receive one byte of data over UART
 uint8_t receiveByte(void) {
     // Loop until receive data register has data
-    while(UCSROA & (1 << RXC0)){}
+    while(UCSR0A & (1 << RXC0)){}
 
     // Read data from receive register
     return UDR0;
