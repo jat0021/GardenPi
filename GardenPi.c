@@ -26,19 +26,18 @@ volatile uint16_t distance;
 // INITIALIZATION FUNCTIONS
 //---------------------------------------------------------------
 // Initialize 16-bit timer for use with HC-SR04 sensor
-/*
 static inline void initTimer1(void){
 	TCCR1B |= (1<<CS11) | (1<<ICES1);
 	TIMSK1 |= (1<<ICIE1) | (1<<ICNC1);
 }
-*/
+
+
 //---------------------------------------------------------------
 // LOCAL FUNCTIONS
 //---------------------------------------------------------------
 /*Trigger HC-SR04
   This function will trigger an HC-SR04 ultrasonic range seNsor
   by generating a 15us HIGH pulse on the selected trigger pin */
-/*
 static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin){
 	trigPort &= ~(1<<trigPin);
 	_delay_us(15);
@@ -49,6 +48,12 @@ static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin){
 
 // Read water level in tank using HC-SR04 sensor
 static void readWaterTankLvl(uint8_t sensorCode){
+	for(i=0; i<5; i++){
+		LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
+		_delay_ms(500);
+	}
+	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
+
 	// Good send flag
 	uint8_t goodSend, i;
 
@@ -91,18 +96,18 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Blink LED to indicate send error
 	if(~goodSend){
 		for(i=0; i<5; i++){
-			LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
+			LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
 			_delay_ms(500);
 		}
-		LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
+		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 	}
 }
-*/
+
+
 //---------------------------------------------------------------
 // INTERRUPT ROUTINES
 //---------------------------------------------------------------
 // Timer 1 capture interrupt to measure distance with HC-SR04 sensor
-/*
 ISR(TIMER1_CAPT_vect){
 	// On rising capture edge
 	if(TCCR1B & (1<<ICES1)){
@@ -142,7 +147,6 @@ ISR(TIMER1_OVF_vect){
 	// Set water level interrupt done flag
 	wtrLvlISRDone = 1;
 }
-*/
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
@@ -155,7 +159,7 @@ ISR(USART_RX_vect){
 
 	// Call UART utility to return pointer to incoming data
 	dataIn = receiveMessage();
-/*
+
 	// Switch to determine which function to run
 	switch(dataIn[0]){
 
@@ -170,7 +174,6 @@ ISR(USART_RX_vect){
 		default:
 			commError();
 	}
-*/
 }
 
 
@@ -191,7 +194,7 @@ int main(){
 	initUART();
 
 	// Initialize timer1
-//	initTimer1();
+	initTimer1();
 
 	// Enable global interrupts
 	sei();
