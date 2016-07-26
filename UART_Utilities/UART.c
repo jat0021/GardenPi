@@ -84,7 +84,7 @@ void commError(){
 
     // Flush receive buffer by temporarily disabling RXEN0
     UCSR0B &= ~(1 << RXEN0);
-    delay_us_(25);
+    _delay_us_(25);
     UCSR0B |= (1 << RXEN0);
 }
 
