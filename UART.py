@@ -35,11 +35,12 @@ def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
 	transmitInitialize()
 
 	# Wait for handshake byte from AVR
-	handshakeByte = sp.readline()
+	handshakeByte = sp.readline()[:-1]
 
 	# Errorproof initialization
 	if (handshakeByte != UART_Messages.AVR_INIT_TO_RASPI):
 		os.system('clear')
+		print(handshakeByte)
 		raise Exception("Invalid 'AVR Initialization' return")
 	else:
 		os.system('clear')
