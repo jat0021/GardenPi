@@ -196,6 +196,9 @@ def transmitMessage( dataMessage ):
 	# Read in package of data
 	dataBack = readPackage()
 
+	# Send msg confirm byte
+	transmitConfirm()
+
 	# Return data
 	return dataBack
 
