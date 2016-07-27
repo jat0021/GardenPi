@@ -38,7 +38,7 @@ def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
 	sp.flushOutput()
 
 	# Send initialization byte to AVR
-	transmitInitialize()
+	transmitInitial()
 
 	# Wait for handshake byte from AVR
 	handshakeByte = sp.readline()[:-1]
@@ -55,8 +55,68 @@ def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
 		os.system('clear')
 
 #------------------------------------------------------------------
+# LOW LEVEL UART FUNCTIONS
+#------------------------------------------------------------------
+# Reply to request with ready byte
+def transmitReady():
+	sp.write(UART_Messages.RASPI_READY)
+	sp.write(UART_Messages.END_MSG)
+
+# Send request to AVR
+def transmitRequest():
+	sp.write(UART_Messages.RASPI_REQ_AVR)
+	sp.write(UART_Messages.END_MSG)
+
+# Send confirm byte to AVR
+def transmitConfirm():
+	sp.write(UART_Messages.RASPI_REC_MSG_CONFIRM)
+	sp.write(UART_Messages.END_MSG)
+
+# Send initialization byte to AVR
+def transmitInitial():
+	sp.write(UART_Messages.RASPI_INIT_TO_AVR)
+	sp.write(UART_Messages.END_MSG)
+
+# Read and check AVR ready byte
+def readReady():
+	# Wait for and check AVR return ready byte
+	readyByte = sp.readline()[:-1]
+	if (readyByte != UART_Messages.AVR_READY):
+		raise Exception("Invalid 'AVR Ready' return")
+	else:
+		print("AVR Ready")
+		time.sleep(2)
+		os.system('clear')
+
+# Handle AVR confirm message
+def readConfirm():
+	# Wait for and check AVR return message received byte
+	confirmByte = sp.readline()[:-1]
+	if (confirmByte != UART_Messages.AVR_REC_MSG_CONFIRM):
+		raise Exception("Invalid 'AVR Message Confirm' return")
+	else:
+		print("AVR confirmed message receipt")
+
+#------------------------------------------------------------------
 # MID LEVEL UART FUNCTIONS
 #------------------------------------------------------------------
+def transmitPackage( dataPackage ):
+	# Check for empty data package
+	if (len(dataPackage) < 1):
+		raise Exception("Empty Data Package")
+	else:
+		# Initialize counter and length
+		i = 0
+		length = len(dataPackage)
+
+		# Loop to send all bytes in data package
+		while(i < length):
+			sp.write(dataPackage[i])
+			i += 1;
+
+		# Send EOM byte
+		sp.write(UART_Messages.END_MSG)
+
 # Read in package, strip EOM character, and encode into hex
 def readPackage():
 	# Initialize array to return data bytes
@@ -96,40 +156,6 @@ def parseError(errorCode):
 	else:
 		raise Exception("Unrecognized Error Code")
 
-# Reply to request with ready byte
-def transmitReady():
-	sp.write(UART_Messages.RASPI_READY)
-	sp.write(UART_Messages.END_MSG)
-
-def transmitRequest():
-	sp.write(UART_Messages.RASPI_REQ_AVR)
-	sp.write(UART_Messages.END_MSG)
-
-def transmitConfirm():
-	sp.write(UART_Messages.RASPI_REC_MSG_CONFIRM)
-	sp.write(UART_Messages.END_MSG)
-
-def transmitInitialize():
-	sp.write(UART_Messages.RASPI_INIT_TO_AVR)
-	sp.write(UART_Messages.END_MSG)
-
-def transmitPackage( dataPackage ):
-	# Check for empty data package
-	if (len(dataPackage) < 1):
-		raise Exception("Empty Data Package")
-	else:
-		# Initialize counter and length
-		i = 0
-		length = len(dataPackage)
-
-		# Loop to send all bytes in data package
-		while(i < length):
-			sp.write(dataPackage[i])
-			i += 1;
-
-		# Send EOM byte
-		sp.write(UART_Messages.END_MSG)
-
 #------------------------------------------------------------------
 # HIGH LEVEL UART FUNCTIONS
 #------------------------------------------------------------------
@@ -137,17 +163,15 @@ def transmitMessage( dataMessage ):
 	# Send AVR request byte
 	transmitRequest()
 
-	# Wait for and check AVR return ready byte
-	readyByte = sp.readline()[:-1]
-	if (readyByte != UART_Messages.AVR_READY):
-		raise Exception("Invalid 'AVR Ready' return")
-	else:
-		transmitPackage(dataMessage)
+	# Wait for AVR ready
+	readReady()
 
-	# Wait for and check AVR return message received byte
-	confirmByte = sp.readline()[:-1]
-	if (confirmByte != UART_Messages.AVR_REC_MSG_CONFIRM):
-		raise Exception("Invalid 'AVR Message Confirm' return")
+	# Send data package
+	transmitPackage( dataMessage )
+
+	# Wait for AVR confirm
+	readConfirm()
+	
 
 
 
