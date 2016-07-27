@@ -174,6 +174,7 @@ int * receiveMessage(void){
 uint8_t transmitMessage(volatile int sendData[4]){
     // Initialize loop counter
     uint8_t i;
+    uint8_t badSendFlag = 0;
 
     // Clear global interrupt to stop receive interrupt
     cli();
@@ -195,18 +196,28 @@ uint8_t transmitMessage(volatile int sendData[4]){
         // Transmit end of message byte
         transmitByte(END_MSG);
 
-        // return 0 for sucessful send
-        return 0;
+        // Check for good confirm byte
+        if (receiveByte() == RASPI_REC_MSG_CONFIRM){
+            // Remove EOM from buffer
+            receiveByte();
+        }
+        else{
+            // Set bad send flag
+            badSendFlag = 2;
+        }
     }
 
     // If improper response is received, call commError()
     else{
         commError();
 
-        // Return 1 for bad send
-        return 1;
+        // Set bad send flag
+            badSendFlag = 1;
     }
 
     // reenable global interrupts
     sei();
+
+    // Return value of badSendFlag
+    return badSendFlag;
 }
