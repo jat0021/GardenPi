@@ -204,9 +204,12 @@ int main(){
 	initTimer1();
 
 	// Enable global interrupts
-	sei();
+//	sei();
 
 	while(1){
+		triggerHCSR04(TRIG1_PORT, TRIG1_PIN);
+		_delay_ms(1000);
+		/*
 		if(byteReceived){
 			// Reset byteReceieved flag
 			byteReceived = 0;
@@ -236,7 +239,7 @@ int main(){
 
 		_delay_ms(750);
 		LED_STATUS_PORT ^= (1 << LED_STATUS_PIN);
+		*/
 	}
-
 	return(0);
 }
