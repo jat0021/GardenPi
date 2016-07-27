@@ -130,8 +130,8 @@ def readPackage():
 	if (packageLength != PACKAGE_LEN):
 		raise Exception("Incorrect Package Length")
 	else:
-		dataOut.append(hex(packageIn[0]))
-		dataOut.append(hex(packageIn[1]))
+		dataOut.append(bytes([packageIn[0]]))
+		dataOut.append(bytes([packageIn[1]]))
 		dataOut.append(convertData(packageIn[2:4]))
 		return dataOut
 
@@ -141,7 +141,7 @@ def convertData(dataIn):
 	msgLen = len(dataIn)
 	if (msgLen != 2):
 		raise Exception("Incorrect Data Length for convertData()")
-	elif (dataIn[0] >= UART_Messages.UART_COMM_ERROR):
+	elif (bytes([dataIn[0]]) >= UART_Messages.UART_COMM_ERROR):
 		parseError(dataIn[0])
 	else:
 		dataRet = struct.unpack('>H',dataIn)
@@ -149,9 +149,10 @@ def convertData(dataIn):
 
 # Parse error code
 def parseError(errorCode):
-	if (errorCode == UART_Messages.UART_COMM_ERROR):
+	errHex = bytes([errorCode])
+	if (errHex == UART_Messages.UART_COMM_ERROR):
 		raise Exception("Communications Error with AVR")
-	elif (errorCode == UART_Messages.HCSR04_TIMEOUT):
+	elif (errHex == UART_Messages.HCSR04_TIMEOUT):
 		raise Exception("HC-SR04 Sensor Timeout Error")
 	else:
 		raise Exception("Unrecognized Error Code")
