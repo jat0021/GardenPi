@@ -94,7 +94,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		// Populate data out array
 		dataToSend[0] = WATER_TANK_LVL;
 		dataToSend[1] = sensorCode;
-		dataToSend[2] = HCSRO4_TIMEOUT
+		dataToSend[2] = HCSR04_TIMEOUT;
 		dataToSend[3] = NULL_BYTE;
 	}
 	else{
