@@ -166,12 +166,6 @@ ISR(TIMER1_OVF_vect){
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
-	uint8_t i;
-	for(i=0; i<6; i++){
-		LED_DEBUG2_PORT ^= LED_DEBUG2_PIN;
-		_delay_ms(500);
-	}
-
 	// Set byte received flag
 	byteReceived = 1;
 
