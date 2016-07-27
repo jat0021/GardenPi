@@ -79,7 +79,7 @@ uint8_t receiveByte(void) {
 // MID LEVEL MESSAGE FUNCTIONS
 //--------------------------------------------------------------
 // Handle UART communication error
-void commError(){
+void commError(void){
     transmitByte(UART_COMM_ERROR);
     transmitByte(END_MSG);
 
@@ -87,6 +87,26 @@ void commError(){
     UCSR0B &= ~(1 << RXEN0);
     _delay_us(25);
     UCSR0B |= (1 << RXEN0);
+}
+
+static void transmitReady(void){
+    transmitByte(AVR_READY);
+    transmitByte(END_MSG);
+}
+
+static void transmitRequest(void){
+    transmitByte(AVR_REQ_RASPI);
+    transmitByte(END_MSG);
+}
+
+static void transmitConfirm(void){
+    transmitByte(AVR_REC_MSG_CONFIRM);
+    transmitByte(END_MSG);
+}
+
+static inline void transmitInitialize(void){
+    transmitByte(AVR_INIT_TO_RASPI);
+    transmitByte(END_MSG);
 }
 
 //--------------------------------------------------------------
@@ -97,43 +117,42 @@ void commError(){
 int * receiveMessage(void){
     // Hold inital byte received
     uint8_t dataByteIn, i;
+    uint8_t j=0;
 
     // Array to hold received data
     static int msgArray[4];
+    int dataByteIn[2];
 
     // Receive initial byte
-    dataByteIn = receiveByte();
+    for(j=0; j<2; j++){
+        dataByteIn[j] = receiveByte();
+    }
+
+    // If message is not properly terminated write error code
+        // to entire array and call commError()
+    if(dataByteIn[1] != END_MSG){
+        for (i=0; i<4; i++){
+            msgArray[i] = UART_COMM_ERROR;
+        }
+        commError();
+    }
 
     // RasPi normal request message to AVR
-    if (dataByteIn == RASPI_REQ_AVR){
+    else if (dataByteIn[0] == RASPI_REQ_AVR){
         // Transmit AVR ready to receive message
-        transmitByte(AVR_READY);
-        transmitByte(END_MSG);
+        transmitReady();
         
         // Loop through next four data bytes and store in array
         for(i=0; i<4; i++){
             msgArray[i] = receiveByte();
         }
-
-        // If message is not properly terminated write error code
-        // to entire array and call commError()
-        if(receiveByte() != END_MSG){
-            for (i=0; i<4; i++){
-                msgArray[i] = UART_COMM_ERROR;
-            }
-            commError();
-        }
-        else{
-            transmitByte(AVR_REC_MSG_CONFIRM);
-            transmitByte(END_MSG);
-        }
+        transmitConfirm();
     }
 
     // RasPi initialize request to AVR
     else if(dataByteIn == RASPI_INIT_TO_AVR){
 	    // Transmit AVR initialized ready byte
-        transmitByte(AVR_INIT_TO_RASPI);
-        transmitByte(END_MSG);
+        transmitInitialize();
 
         // Write initialized byte to array
         for(i=0; i<4; i++){
@@ -158,7 +177,7 @@ uint8_t transmitMessage(volatile int sendData[4]){
     cli();
 
     // Send AVR request RasPi byte
-    transmitByte(AVR_REQ_RASPI);
+    transmitRequest();
 
     // Wait for response from RasPi
     // **** This has possibility of hanging program -- needs improvement!

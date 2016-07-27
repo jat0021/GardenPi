@@ -63,7 +63,15 @@ uint8_t receiveByte(void);
 // MID LEVEL MESSAGE FUNCTIONS
 //--------------------------------------------------------------
 // Handle UART communication error
-void commError();
+void commError(void);
+
+static void transmitReady(void);
+
+static void transmitRequest(void);
+
+static void transmitConfirm(void);
+
+static void transmitInitialize(void);
 
 
 //--------------------------------------------------------------
