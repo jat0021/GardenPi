@@ -209,10 +209,13 @@ uint8_t transmitMessage(volatile int sendData[4]){
 
     // If improper response is received, call commError()
     else{
-        commError();
-
         // Set bad send flag
             badSendFlag = 1;
+    }
+
+    // If badSendFlag is set - call commError()
+    if(badSendFlag != 0){
+        commError();
     }
 
     // reenable global interrupts
