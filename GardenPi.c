@@ -17,7 +17,8 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 // int program control flags
 	//
 volatile uint8_t byteReceived=0;
-volatile uint8_t wtrLvlISRDone;
+volatile uint8_t ultraTimeout=0;
+volatile uint8_t wtrLvlISRDone=0;
 
 // Data arrays and pointers
 volatile int dataToSend[4];
@@ -64,6 +65,9 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Reset water level interrupt done flag
 	wtrLvlISRDone = 0;
 
+	// Reset sensor timeout error flag
+	ultraTimeout = 0;
+
 	// Trigger correct HC-SR04 sensor
 	switch(sensorCode){
 		case TANK1:
@@ -85,17 +89,21 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Calculate distance from recorded timer values
 	distance = (endCount - beginCount) / 58;
 
-	// Populate data out array
-	dataToSend[0] = WATER_TANK_LVL;
-	dataToSend[1] = sensorCode;
-	dataToSend[2] = (distance >> 8);
-	dataToSend[3] = distance;
-
-	for(i=0; i<5; i++){
-		LED_DEBUG2_PORT ^= (1 << LED_DEBUG2_PIN);
-		_delay_ms(500);
+	// Check for sensor timeout error flag
+	if(ultraTimeout){
+		// Populate data out array
+		dataToSend[0] = WATER_TANK_LVL;
+		dataToSend[1] = sensorCode;
+		dataToSend[2] = HCSRO4_TIMEOUT
+		dataToSend[3] = NULL_BYTE;
 	}
-	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
+	else{
+		// Populate data out array
+		dataToSend[0] = WATER_TANK_LVL;
+		dataToSend[1] = sensorCode;
+		dataToSend[2] = (distance >> 8);
+		dataToSend[3] = distance;
+	}
 
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
@@ -152,8 +160,9 @@ ISR(TIMER1_OVF_vect){
 	// Disable timer1 overflow interrupt
 	TIMSK1 &= ~(1<<TOIE1);
 
-	// Set water level interrupt done flag
+	// Set water level interrupt done flag and timeout error flag
 	wtrLvlISRDone = 1;
+	ultraTimeout = 1;
 }
 
 // UART receive interrupt 

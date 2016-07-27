@@ -184,6 +184,9 @@ uint8_t transmitMessage(volatile int sendData[4]){
     // Wait for response from RasPi
     // **** This has possibility of hanging program -- needs improvement!
     if (receiveByte() == RASPI_READY){
+        // Remove EOM from buffer
+        receiveByte();
+        
         // Loop to send all of data array
         for(i=0; i<4; i++){
             transmitByte(sendData[i]);
