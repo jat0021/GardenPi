@@ -116,8 +116,9 @@ static inline void transmitInitialize(void){
 // RasPi and return proper confirmation bytes
 int * receiveMessage(void){
     // Hold inital byte received
-    uint8_t i;
+    uint8_t i=0;
     uint8_t j=0;
+    uint8_t n=0;
 
     // Array to hold received data
     static int msgArray[10];
@@ -144,9 +145,9 @@ int * receiveMessage(void){
         
         // Loop through until EOM reached and store in array
         do{
-            msgArray[i] = receiveByte();
-            i++;
-        }while(msgArray[i-1] != END_MSG);
+            msgArray[n] = receiveByte();
+            n++;
+        }while(msgArray[n-1] != END_MSG);
         transmitConfirm();
     }
 
