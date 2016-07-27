@@ -56,7 +56,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		_delay_ms(500);
 	}
 	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
-/*
+
 	// Clear timer1
 	TCNT1 = 0;
 
@@ -90,6 +90,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	dataToSend[2] = (distance >> 8);
 	dataToSend[3] = distance;
 
+/*
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
 
@@ -101,7 +102,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		}
 		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 	}
-	*/
+*/
 }
 
 
