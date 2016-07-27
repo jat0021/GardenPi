@@ -120,7 +120,7 @@ int * receiveMessage(void){
     uint8_t j=0;
 
     // Array to hold received data
-    static int msgArray[4];
+    static int msgArray[10];
     int dataByteIn[2];
 
     // Receive initial byte
@@ -142,11 +142,12 @@ int * receiveMessage(void){
         // Transmit AVR ready to receive message
         transmitReady();
         
-        // Loop through next four data bytes and store in array
-        for(i=0; i<4; i++){
+        // Loop through until EOM reached and store in array
+        do{
             msgArray[i] = receiveByte();
+            i++;
+        }while(msgArray[i-1] != END_MSG)
         }
-        receiveByte();
         transmitConfirm();
     }
 
