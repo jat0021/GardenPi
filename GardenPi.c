@@ -59,14 +59,14 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Good send flag
 	uint8_t goodSend, i;
 	
-	// Clear timer1
-	TCNT1 = 0;
-
 	// Reset water level interrupt done flag
 	wtrLvlISRDone = 0;
 
 	// Reset sensor timeout error flag
 	ultraTimeout = 0;
+
+	// Clear timer1
+	TCNT1 = 0;
 
 	// Trigger correct HC-SR04 sensor
 	switch(sensorCode){
@@ -137,11 +137,11 @@ ISR(TIMER1_CAPT_vect){
 		// Record timer value as endCount
 		endCount = ICR1;
 
-		// Switch triggering edge to rising
-		TCCR1B |= (1<<ICES1);
-
 		// Disable timer1 overflow interrupt
 		TIMSK1 &= ~(1<<TOIE1);
+
+		// Switch triggering edge to rising
+		TCCR1B |= (1<<ICES1);		
 
 		// Set water level interrupt done flag
 		wtrLvlISRDone = 1;
