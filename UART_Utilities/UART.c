@@ -89,22 +89,22 @@ void commError(void){
     UCSR0B |= (1 << RXEN0);
 }
 
-static void transmitReady(void){
+void transmitReady(void){
     transmitByte(AVR_READY);
     transmitByte(END_MSG);
 }
 
-static void transmitRequest(void){
+void transmitRequest(void){
     transmitByte(AVR_REQ_RASPI);
     transmitByte(END_MSG);
 }
 
-static void transmitConfirm(void){
+void transmitConfirm(void){
     transmitByte(AVR_REC_MSG_CONFIRM);
     transmitByte(END_MSG);
 }
 
-static inline void transmitInitialize(void){
+void transmitInitialize(void){
     transmitByte(AVR_INIT_TO_RASPI);
     transmitByte(END_MSG);
 }

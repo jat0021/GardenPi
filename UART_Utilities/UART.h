@@ -65,13 +65,13 @@ uint8_t receiveByte(void);
 // Handle UART communication error
 void commError(void);
 
-static void transmitReady(void);
+void transmitReady(void);
 
-static void transmitRequest(void);
+void transmitRequest(void);
 
-static void transmitConfirm(void);
+void transmitConfirm(void);
 
-static void transmitInitialize(void);
+void transmitInitialize(void);
 
 
 //--------------------------------------------------------------

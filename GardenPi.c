@@ -107,8 +107,8 @@ static void readWaterTankLvl(uint8_t sensorCode){
 
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
-/*
-	// Blink LED to indicate send error
+
+	// Blink LED debug1 to indicate send error
 	if(~goodSend){
 		for(i=0; i<5; i++){
 			LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
@@ -116,7 +116,6 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		}
 		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 	}
-*/
 }
 
 
