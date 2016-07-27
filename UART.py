@@ -77,6 +77,20 @@ def transmitInitial():
 	sp.write(UART_Messages.RASPI_INIT_TO_AVR)
 	sp.write(UART_Messages.END_MSG)
 
+# Wait for AVR to initiate request to RasPi
+def waitForRequest():
+	reqByte = b''
+	print("Waiting for AVR to Request RasPi")
+
+	while (not reqByte):
+
+		reqByte = sp.readline()
+
+	os.system('clear')
+	print("AVR Request Received")
+	time.sleep(3)
+	os.system('clear')
+
 # Read and check AVR ready byte
 def readReady():
 	# Wait for and check AVR return ready byte
@@ -172,6 +186,19 @@ def transmitMessage( dataMessage ):
 
 	# Wait for AVR confirm
 	readConfirm()
+
+	# Wait for AVR to send request to RasPi
+	waitForRequest()
+
+	# Send ready byte
+	transmitReady()
+
+	# Read in package of data
+	dataBack = readPackage()
+
+	# Return data
+	return dataBack
+
 	
 
 
