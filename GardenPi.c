@@ -57,7 +57,7 @@ static void triggerHCSR04(volatile uint8_t *port, uint8_t pin){
 // Read water level in tank using HC-SR04 sensor
 static void readWaterTankLvl(uint8_t sensorCode){
 	// Good send flag
-	uint8_t goodSend, i;
+	uint8_t badSend, i;
 	
 	// Reset water level interrupt done flag
 	wtrLvlISRDone = 0;
@@ -106,10 +106,10 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	}
 
 	// Send message to RasPi containing sensor data
-	goodSend = transmitMessage(dataToSend);
+	badSend = transmitMessage(dataToSend);
 
 	// Blink LED debug1 to indicate send error
-	if(~goodSend){
+	if(badSend != 0){
 		for(i=0; i<5; i++){
 			LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
 			_delay_ms(500);
