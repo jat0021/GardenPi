@@ -159,7 +159,7 @@ def convertData(dataIn):
 		parseError(dataIn[0])
 	else:
 		dataRet = struct.unpack('>H',dataIn)
-		return dataRet
+		return dataRet[0]
 
 # Parse error code
 def parseError(errorCode):
