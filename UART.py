@@ -51,6 +51,8 @@ def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
 	else:
 		os.system('clear')
 		print("UART Communications Initialized!")
+		time.sleep(3)
+		os.system('clear')
 
 #------------------------------------------------------------------
 # MID LEVEL UART FUNCTIONS
