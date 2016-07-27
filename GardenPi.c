@@ -14,9 +14,15 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 //--------------------------------------------------------------
 // GLOBAL VARIABLE DEFINITIONS
 //--------------------------------------------------------------
+// int program control flags
+	//
 volatile uint8_t byteReceived, wtrLvlISRDone;
+
+// Data arrays and pointers
 volatile int dataToSend[4];
 volatile int *dataIn;
+
+// Data variables to measure ultrasonic ranges
 volatile uint16_t beginCount, endCount;
 volatile uint16_t elapsedCounts;
 volatile uint16_t distance;
@@ -152,30 +158,8 @@ ISR(TIMER1_OVF_vect){
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
-	// Debug - flash debug LED 1 - one time
-	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
-	_delay_ms(1000);
-	LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PIN);
-	_delay_ms(1000);
-	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
-
-	// Call UART utility to return pointer to incoming data
-	dataIn = receiveMessage();
-
-	// Switch to determine which function to run
-	switch(dataIn[0]){
-
-		// Read water tank level
-		case WATER_TANK_LVL:
-			readWaterTankLvl(dataIn[1]);
-			break;
-
-		case AVR_INIT_TO_RASPI:
-			break;
-
-		default:
-			commError();
-	}
+	// Set byte received flag
+	byteReceived = 1;
 }
 
 
@@ -217,6 +201,36 @@ int main(){
 	sei();
 
 	while(1){
+		if(byteReceived){
+			// Reset byteReceieved flag
+			byteReceieved = 0;
+
+			// Call UART utility to return pointer to incoming data
+			dataIn = receiveMessage();
+
+			// Switch to determine which function to run
+			switch(dataIn[0]){
+				// Read water tank level
+				case WATER_TANK_LVL:
+					readWaterTankLvl(dataIn[1]);
+					break;
+
+				// Initializing Handshake
+				case AVR_INIT_TO_RASPI:
+					break;
+
+				//
+				default:
+					// Add debug LED 3 - flash 2 times
+			        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
+			        for(i=0; i<6; i++){
+			            LED_DEBUG3_PORT ^= (1 << LED_DEBUG3_PIN);
+			            _delay_ms(1000);
+			        }
+			        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
+			}
+		}
+
 		_delay_ms(750);
 		LED_STATUS_PORT ^= (1 << LED_STATUS_PIN);
 	}

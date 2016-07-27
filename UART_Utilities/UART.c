@@ -108,6 +108,7 @@ int * receiveMessage(void){
     if (dataByteIn == RASPI_REQ_AVR){
         // Transmit AVR ready to receive message
         transmitByte(AVR_READY);
+        transmitByte(END_MSG);
         
         // Loop through next four data bytes and store in array
         for(i=0; i<4; i++){
@@ -122,12 +123,17 @@ int * receiveMessage(void){
             }
             commError();
         }
+        else{
+            transmitByte(AVR_REC_MSG_CONFIRM);
+            transmitByte(END_MSG);
+        }
     }
 
     // RasPi initialize request to AVR
     else if(dataByteIn == RASPI_INIT_TO_AVR){
 	    // Transmit AVR initialized ready byte
         transmitByte(AVR_INIT_TO_RASPI);
+        transmitByte(END_MSG);
 
         // Write initialized byte to array
         for(i=0; i<4; i++){
@@ -137,13 +143,6 @@ int * receiveMessage(void){
 
     // Improper initial communication byte, call commError()
     else{
-        // Add debug LED 1 - flash 2 times
-        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
-        for(i=0; i<6; i++){
-            LED_DEBUG3_PORT ^= (1 << LED_DEBUG3_PIN);
-            _delay_ms(1000);
-        }
-        LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);
         commError();
     }
 
