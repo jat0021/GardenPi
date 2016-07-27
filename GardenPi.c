@@ -97,10 +97,10 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	dataToSend[2] = (distance >> 8);
 	dataToSend[3] = distance;
 
-/*
+
 	// Send message to RasPi containing sensor data
 	goodSend = transmitMessage(dataToSend);
-
+/*
 	// Blink LED to indicate send error
 	if(~goodSend){
 		for(i=0; i<5; i++){
