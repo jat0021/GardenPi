@@ -16,7 +16,8 @@ This program measures distance using an HC-SR04 ultrasonic sensor and then trans
 //--------------------------------------------------------------
 // int program control flags
 	//
-volatile uint8_t byteReceived, wtrLvlISRDone;
+volatile uint8_t byteReceived=0;
+volatile uint8_t wtrLvlISRDone;
 
 // Data arrays and pointers
 volatile int dataToSend[4];
@@ -167,6 +168,9 @@ ISR(USART_RX_vect){
 // MAIN FUNCTION
 //--------------------------------------------------------------
 int main(){
+	// Initialize variables
+	uint8_t i;
+
 	//Set data direction out for LED pins
 	LED_STATUS_DDR |= (1 << LED_STATUS_PIN);
 	LED_DEBUG1_DDR |= (1 << LED_DEBUG1_PIN);
@@ -203,7 +207,7 @@ int main(){
 	while(1){
 		if(byteReceived){
 			// Reset byteReceieved flag
-			byteReceieved = 0;
+			byteReceived = 0;
 
 			// Call UART utility to return pointer to incoming data
 			dataIn = receiveMessage();
