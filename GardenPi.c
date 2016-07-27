@@ -56,7 +56,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		_delay_ms(500);
 	}
 	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
-
+/*
 	// Clear timer1
 	TCNT1 = 0;
 
@@ -101,6 +101,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 		}
 		LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
 	}
+	*/
 }
 
 
@@ -165,14 +166,7 @@ ISR(USART_RX_vect){
 
 		// Read water tank level
 		case WATER_TANK_LVL:
-			// Debug - flash debug LED 1 - one time
-			LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
-			_delay_ms(1000);
-			LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PIN);
-			_delay_ms(1000);
-			LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
-
-			//readWaterTankLvl(dataIn[1]);
+			readWaterTankLvl(dataIn[1]);
 			break;
 
 		case AVR_INIT_TO_RASPI:
@@ -193,6 +187,21 @@ int main(){
 	LED_DEBUG1_DDR |= (1 << LED_DEBUG1_PIN);
 	LED_DEBUG2_DDR |= (1 << LED_DEBUG2_PIN);
 	LED_DEBUG3_DDR |= (1 << LED_DEBUG3_PIN);
+
+	// Turn on all LED's
+	LED_STATUS_PORT |= (1 << LED_STATUS_PIN);
+	LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PIN);
+	LED_DEBUG2_PORT |= (1 << LED_DEBUG2_PIN);
+	LED_DEBUG3_PORT |= (1 << LED_DEBUG3_PIN);
+
+	// Delay 1000 ms
+	_delay_ms(1000);
+
+	// Turn off all LED's
+	LED_STATUS_PORT &= ~(1 << LED_STATUS_PIN);
+	LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+	LED_DEBUG2_PORT &= ~(1 << LED_DEBUG2_PIN);
+	LED_DEBUG3_PORT &= ~(1 << LED_DEBUG3_PIN);	
 
 	//Set data direction out for SONIC_TRIG1 pin
 	TRIG1_DDR |= (1 << TRIG1_PIN);
