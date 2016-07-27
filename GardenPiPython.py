@@ -33,10 +33,7 @@ worksheet = gc.open(worksheetName).sheet1
 #--------------------------------
 # INITIALIZE SERIAL PORT
 #--------------------------------
-SERIAL_PORT = "/dev/ttyAMA0"
-BAUD_RATE = 9600
-
-sp = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout = 5)
+sp = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout = 30)
 sp.flushInput()
 sp.flushOutput()
 
