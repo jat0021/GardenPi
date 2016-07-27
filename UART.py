@@ -17,26 +17,28 @@ import serial
 SERIAL_PORT = "/dev/ttyAMA0"
 BAUD_RATE = 9600
 DEF_TIMEOUT = 30
+sp = 0
 
 #------------------------------------------------------------------
 # INITIALIZATION FUNCTION
 #------------------------------------------------------------------
-def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeout=DEF_TIMEOUT):
-	sp = serial.Serial(port, baud, timeout)
+def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
+	global sp
+	sp = serial.Serial(port, baud, timeout=timeOutVar)
 	sp.flushInput()
 	sp.flushOutput()
 
-	# Send initialization byte to AVR
-	transmitInitialize()
-
-	# Wait for handshake byte from AVR
-	handshakeByte = sp.readline()
-
-	# Errorproof initialization
-	if (handshakeByte != AVR_INIT_TO_RASPI):
-		raise Exception("Invalid 'AVR Initialization' return")
-	else:
-		print("UART Communications Initialized!")
+#	# Send initialization byte to AVR
+#	transmitInitialize()
+#
+#	# Wait for handshake byte from AVR
+#	handshakeByte = sp.readline()
+#
+#	# Errorproof initialization
+#	if (handshakeByte != AVR_INIT_TO_RASPI):
+#		raise Exception("Invalid 'AVR Initialization' return")
+#	else:
+#		print("UART Communications Initialized!")
 
 #------------------------------------------------------------------
 # MID LEVEL UART FUNCTIONS
