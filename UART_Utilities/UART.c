@@ -146,6 +146,7 @@ int * receiveMessage(void){
         for(i=0; i<4; i++){
             msgArray[i] = receiveByte();
         }
+        receiveByte();
         transmitConfirm();
     }
 
