@@ -160,6 +160,9 @@ ISR(TIMER1_OVF_vect){
 ISR(USART_RX_vect){
 	// Set byte received flag
 	byteReceived = 1;
+
+	// Call UART utility to return pointer to incoming data
+	dataIn = receiveMessage();
 }
 
 
@@ -207,9 +210,6 @@ int main(){
 		if(byteReceived){
 			// Reset byteReceieved flag
 			byteReceived = 0;
-
-			// Call UART utility to return pointer to incoming data
-			dataIn = receiveMessage();
 
 			// Switch to determine which function to run
 			switch(dataIn[0]){
