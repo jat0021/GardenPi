@@ -204,7 +204,7 @@ int main(){
 	initTimer1();
 
 	// Enable global interrupts
-//	sei();
+	sei();
 
 	while(1){
 		if(byteReceived){
