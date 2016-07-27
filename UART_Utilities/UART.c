@@ -116,7 +116,7 @@ static inline void transmitInitialize(void){
 // RasPi and return proper confirmation bytes
 int * receiveMessage(void){
     // Hold inital byte received
-    uint8_t dataByteIn, i;
+    uint8_t i;
     uint8_t j=0;
 
     // Array to hold received data
@@ -150,7 +150,7 @@ int * receiveMessage(void){
     }
 
     // RasPi initialize request to AVR
-    else if(dataByteIn == RASPI_INIT_TO_AVR){
+    else if(dataByteIn[0] == RASPI_INIT_TO_AVR){
 	    // Transmit AVR initialized ready byte
         transmitInitialize();
 
