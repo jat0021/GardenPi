@@ -81,7 +81,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	}	
 
 	// Enable timer1 overflow interrupt
-	TIMSK1 |= (1<<TOIE1);
+	//TIMSK1 |= (1<<TOIE1);
 
 	// Loop until water level interrupt flag is set
 	while(!wtrLvlISRDone){}
@@ -166,6 +166,11 @@ ISR(TIMER1_OVF_vect){
 
 // UART receive interrupt 
 ISR(USART_RX_vect){
+	uint8_t i;
+	for(i=0; i<6; i++){
+		LED_DEBUG2_PORT ^= LED_DEBUG2_PIN;
+	}
+
 	// Set byte received flag
 	byteReceived = 1;
 
