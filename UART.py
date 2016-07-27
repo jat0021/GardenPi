@@ -10,6 +10,7 @@
 #------------------------------------------------------------------
 import UART_Messages
 import serial
+import os
 
 #------------------------------------------------------------------
 # SERIAL PORT PARAMETERS
@@ -23,22 +24,26 @@ sp = 0
 # INITIALIZATION FUNCTION
 #------------------------------------------------------------------
 def initUART(port=SERIAL_PORT, baud=BAUD_RATE, timeOutVar=DEF_TIMEOUT):
+	print("Initializing UART Communications... Please Wait")
+
 	global sp
 	sp = serial.Serial(port, baud, timeout=timeOutVar)
 	sp.flushInput()
 	sp.flushOutput()
 
-#	# Send initialization byte to AVR
-#	transmitInitialize()
-#
-#	# Wait for handshake byte from AVR
-#	handshakeByte = sp.readline()
-#
-#	# Errorproof initialization
-#	if (handshakeByte != AVR_INIT_TO_RASPI):
-#		raise Exception("Invalid 'AVR Initialization' return")
-#	else:
-#		print("UART Communications Initialized!")
+	# Send initialization byte to AVR
+	transmitInitialize()
+
+	# Wait for handshake byte from AVR
+	handshakeByte = sp.readline()
+
+	# Errorproof initialization
+	if (handshakeByte != UART_Messages.AVR_INIT_TO_RASPI):
+		os.system('clear')
+		raise Exception("Invalid 'AVR Initialization' return")
+	else:
+		os.system('clear')
+		print("UART Communications Initialized!")
 
 #------------------------------------------------------------------
 # MID LEVEL UART FUNCTIONS
