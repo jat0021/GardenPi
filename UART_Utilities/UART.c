@@ -146,8 +146,7 @@ int * receiveMessage(void){
         do{
             msgArray[i] = receiveByte();
             i++;
-        }while(msgArray[i-1] != END_MSG)
-        }
+        }while(msgArray[i-1] != END_MSG);
         transmitConfirm();
     }
 
