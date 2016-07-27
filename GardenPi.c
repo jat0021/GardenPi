@@ -45,12 +45,12 @@ static inline void initTimer1(void){
 /*Trigger HC-SR04
   This function will trigger an HC-SR04 ultrasonic range seNsor
   by generating a 15us HIGH pulse on the selected trigger pin */
-static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin){
-	trigPort &= ~(1<<trigPin);
+static void triggerHCSR04(volatile uint8_t *port, uint8_t pin){
+	*port &= ~(1 << pin);
 	_delay_us(15);
-	trigPort |= (1<<trigPin);
+	*port |= (1 << pin);
 	_delay_us(15);
-	trigPort &= ~(1<<trigPin);
+	*port &= ~(1 << pin);
 }
 
 // Read water level in tank using HC-SR04 sensor
@@ -67,10 +67,10 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	// Trigger correct HC-SR04 sensor
 	switch(sensorCode){
 		case TANK1:
-			triggerHCSR04(TRIG1_PORT, TRIG1_PIN);
+			triggerHCSR04(&TRIG1_PORT, TRIG1_PIN);
 			break;
 		case TANK2:
-			triggerHCSR04(TRIG2_PORT, TRIG2_PIN);
+			triggerHCSR04(&TRIG2_PORT, TRIG2_PIN);
 			break;
 		default:
 			commError();
@@ -207,7 +207,8 @@ int main(){
 //	sei();
 
 	while(1){
-		triggerHCSR04(TRIG1_PORT, TRIG1_PIN);
+		triggerHCSR04(&TRIG1_PORT, TRIG1_PIN);
+		LED_DEBUG1_PORT ^= (1 << LED_DEBUG1_PIN);
 		_delay_ms(1000);
 		/*
 		if(byteReceived){

@@ -49,7 +49,7 @@ the GardenPi.c program
 static inline void initTimer1(void);
 
 // Trigger HC-SR04 sensor
-static void triggerHCSR04(uint8_t trigPort, uint8_t trigPin);
+static void triggerHCSR04(volatile uint8_t *port, uint8_t pin);
 
 // Read water level in tank
 static void readWaterTankLvl(uint8_t sensorCode);
