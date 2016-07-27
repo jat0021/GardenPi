@@ -80,7 +80,7 @@ static void readWaterTankLvl(uint8_t sensorCode){
 	TIMSK1 |= (1<<TOIE1);
 
 	// Loop until water level interrupt flag is set
-	while(~wtrLvlISRDone){}
+	while(!wtrLvlISRDone){}
 
 	// Calculate distance from recorded timer values
 	distance = (endCount - beginCount) / 58;
