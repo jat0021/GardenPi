@@ -165,7 +165,14 @@ ISR(USART_RX_vect){
 
 		// Read water tank level
 		case WATER_TANK_LVL:
-			readWaterTankLvl(dataIn[1]);
+			// Debug - flash debug LED 1 - one time
+			LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+			_delay_ms(1000);
+			LED_DEBUG1_PORT |= (1 << LED_DEBUG1_PIN);
+			_delay_ms(1000);
+			LED_DEBUG1_PORT &= ~(1 << LED_DEBUG1_PIN);
+
+			//readWaterTankLvl(dataIn[1]);
 			break;
 
 		case AVR_INIT_TO_RASPI:
