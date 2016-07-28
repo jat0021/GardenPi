@@ -41,7 +41,7 @@ UART.initUART()
 #---------------------------------
 # Compile data message polling information from HC-SR04 sensor 1
 sensorRequest = (UART_Messages.WATER_TANK_LVL
-	+ UART_Messages.OPTION1
+	+ UART_Messages.OPTION_1
 	+ UART_Messages.NULL_BYTE
 	+ UART_Messages.NULL_BYTE)
 
@@ -49,7 +49,8 @@ sensorRequest = (UART_Messages.WATER_TANK_LVL
 sensorData = UART.transmitMessage( sensorRequest )
 
 # Write sensor data to google sheet
-worksheet.update_cell(2,3, sensorData)
+worksheet.update_cell(2,3, sensorData[3])
+print("Range %04d cm written to Google Sheet" % sensorData[3], end="")
 
 
 
