@@ -13,8 +13,9 @@
 #-----------------------------
 import os
 import time
-import serial
 import gspread
+import UART
+import UART_Messages
 from oauth2client.service_account import ServiceAccountCredentials
 
 #------------------------------
@@ -33,32 +34,23 @@ worksheet = gc.open(worksheetName).sheet1
 #--------------------------------
 # INITIALIZE SERIAL PORT
 #--------------------------------
-sp = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout = 30)
-sp.flushInput()
-sp.flushOutput()
+UART.initUART()
 
 #---------------------------------
 # MAIN PROGRAM LOOP
 #---------------------------------
-while(1):
-	# Clear Screen
-	os.system('clear')
+# Compile data message polling information from HC-SR04 sensor 1
+sensorRequest = UART_Messages.WATER_TANK_LVL
+	+ UART_Messages.OPTION1
+	+ UART_Messages.NULL_BYTE
+	+ UART_Messages.NULL_BYTE
 
-	# Write sensor trigger byte to atmega
-	sp.write(b'\x01')
+# Get sensor data
+sensorData = UART.transmitMessage( sensorRequest )
 
-	# Read sensor data from atmega
-	dataRead = sp.read(5)
-	if dataRead == b'65535':
-		print("Sensor Timeout Error")
-	elif dataRead == b'56797':
-		print("UART Data Error")
-	else:
-		sensorStr = dataRead.decode()
-		sensorData = int(sensorStr[1:5])
-		print("Distance = %04d cm" % dataRead, end="")
-		worksheet.update_cell(2,3, sensorData)
+# Write sensor data to google sheet
+worksheet.update_cell(2,3, sensorData)
 
-	time.sleep(1)
+
 
 
