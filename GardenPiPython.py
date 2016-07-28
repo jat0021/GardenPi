@@ -40,10 +40,10 @@ UART.initUART()
 # MAIN PROGRAM LOOP
 #---------------------------------
 # Compile data message polling information from HC-SR04 sensor 1
-sensorRequest = (UART_Messages.WATER_TANK_LVL
-	+ UART_Messages.OPTION_1
-	+ UART_Messages.NULL_BYTE
-	+ UART_Messages.NULL_BYTE)
+sensorRequest = [UART_Messages.WATER_TANK_LVL,
+	UART_Messages.OPTION_1,
+	UART_Messages.NULL_BYTE,
+	UART_Messages.NULL_BYTE]
 
 # Get sensor data
 sensorData = UART.transmitMessage( sensorRequest )
