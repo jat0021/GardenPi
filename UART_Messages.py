@@ -23,7 +23,7 @@ END_MSG					=b'\x0A'
 
 # General Communication Bytes
 OPTION_1				=b'\x10'
-OPTION_1				=b'\x11'
+OPTION_2				=b'\x11'
 OPTION_3				=b'\x12'
 OPTION_4				=b'\x13'
 OPTION_5				=b'\x14'
