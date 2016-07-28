@@ -49,7 +49,7 @@ sensorRequest = [UART_Messages.WATER_TANK_LVL,
 sensorData = UART.transmitMessage( sensorRequest )
 
 # Write sensor data to google sheet
-worksheet.update_cell(2,3, sensorData[2])
+worksheet.update_cell(3,2, sensorData[2])
 print("Range %04d cm written to Google Sheet" % sensorData[2], end="")
 
 
