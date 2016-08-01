@@ -12,7 +12,7 @@ Features to be added:
 Credits
 -------
 * Serial Utilities by Elliot Williams - Make: AVR Programming
-	* License included in UART_Utilities folder
+	* License included LICENSE.md file
 	* Makefile based on Makefiles from same author
 * HC-SR04 Code Reference
 	* http://www.circuitdb.com/?p=1162
